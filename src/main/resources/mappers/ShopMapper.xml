@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="store.mapper.ShopMapper">
+    <!-- 查询所有店铺 -->
+    <select id="findAll" resultType="store.bean.Shop">
+        SELECT * FROM shop
+    </select>
+
+    <!-- 查询待审核的店铺 -->
+    <select id="findPending" resultType="store.bean.Shop">
+        SELECT * FROM shop WHERE status = 0
+    </select>
+
+    <!-- 根据ID查询店铺 -->
+    <select id="findById" resultType="store.bean.Shop">
+        SELECT * FROM shop WHERE id = #{id}
+    </select>
+
+    <!-- 根据名称查询店铺 -->
+    <select id="findByName" resultType="store.bean.Shop">
+        SELECT * FROM shop WHERE name = #{name}
+    </select>
+
+    <!-- 根据类别查询店铺 -->
+    <select id="findByCategory" resultType="store.bean.Shop">
+        SELECT * FROM shop WHERE category_id = #{categoryId}
+    </select>
+
+    <!-- 添加店铺 -->
+    <insert id="insert" parameterType="store.bean.Shop" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO shop (
+            name, category_id, category_name, type, type_name,
+            introduction, create_time, status
+        ) VALUES (
+                     #{name}, #{categoryId}, #{categoryName}, #{type}, #{typeName},
+                     #{introduction}, NOW(), #{status}
+                 )
+    </insert>
+
+    <!-- 更新店铺 -->
+    <update id="update" parameterType="store.bean.Shop">
+        UPDATE shop
+        SET name = #{name},
+            category_id = #{categoryId},
+            category_name = #{categoryName},
+            type = #{type},
+            type_name = #{typeName},
+            introduction = #{introduction}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除店铺 -->
+    <delete id="delete">
+        DELETE FROM shop WHERE id = #{id}
+    </delete>
+
+    <!-- 分页查询 -->
+    <select id="findByPage" resultType="store.bean.Shop">
+        SELECT * FROM shop
+                          LIMIT #{start}, #{size}
+    </select>
+
+    <!-- 查询总记录数 -->
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM shop
+    </select>
+
+    <!-- 更新店铺状态 -->
+    <update id="updateStatus">
+        UPDATE shop SET status = #{status} WHERE id = #{id}
+    </update>
+</mapper>

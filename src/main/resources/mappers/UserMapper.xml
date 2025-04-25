@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="store.mapper.UserMapper">
+
+    <resultMap id="userResultMap" type="store.bean.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="status" column="status"/>
+        <result property="loginAttempts" column="login_attempts"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+    </resultMap>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="findByUsername" parameterType="string" resultMap="userResultMap">
+        SELECT * FROM t_user WHERE username = #{username}
+    </select>
+    <!-- 根据邮箱查询用户 -->
+    <select id="findByEmail" parameterType="string" resultMap="userResultMap">
+        SELECT * FROM t_user WHERE email = #{email}
+    </select>
+    <!-- 更新用户登录尝试次数 -->
+    <update id="updateLoginAttempts">
+        UPDATE t_user
+        SET login_attempts = #{loginAttempts}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新用户状态 -->
+    <update id="updateUserStatus">
+        UPDATE t_user
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新最后登录时间 -->
+    <update id="updateLastLoginTime">
+        UPDATE t_user
+        SET last_login_time = #{lastLoginTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 添加用户 -->
+    <insert id="addUser" parameterType="store.bean.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_user (username, password, email, phone, status, login_attempts, create_time, last_login_time)
+        VALUES (#{username}, #{password}, #{email}, #{phone}, #{status}, #{loginAttempts}, #{createTime}, #{lastLoginTime})
+    </insert>
+
+    <!-- 获取所有用户 -->
+    <select id="getAllUsers" resultMap="userResultMap">
+        SELECT * FROM t_user ORDER BY id DESC
+    </select>
+
+    <!-- 根据ID查询用户 -->
+    <select id="findById" parameterType="int" resultMap="userResultMap">
+        SELECT * FROM t_user WHERE id = #{id}
+    </select>
+</mapper>
