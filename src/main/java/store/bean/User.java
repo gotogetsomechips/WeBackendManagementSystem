@@ -8,7 +8,10 @@ public class User {
     private String password;
     private String email;
     private String phone;
-    private Integer status;        // 0: 正常, 1: 锁定
+    private Integer gender;       // 0: 未知, 1: 男, 2: 女
+    private String address;
+    private String userLevel;     // 用户等级: 普通用户, 银牌用户, 金牌用户, 管理员
+    private Integer status;       // 0: 正常, 1: 锁定
     private Integer loginAttempts; // 登录失败次数
     private Date createTime;
     private Date lastLoginTime;
@@ -54,6 +57,30 @@ public class User {
         this.phone = phone;
     }
 
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getUserLevel() {
+        return userLevel;
+    }
+
+    public void setUserLevel(String userLevel) {
+        this.userLevel = userLevel;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -93,6 +120,9 @@ public class User {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
+                ", gender=" + gender +
+                ", address='" + address + '\'' +
+                ", userLevel='" + userLevel + '\'' +
                 ", status=" + status +
                 ", loginAttempts=" + loginAttempts +
                 ", createTime=" + createTime +

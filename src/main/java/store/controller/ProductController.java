@@ -1,7 +1,6 @@
 package store.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,35 +16,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import store.bean.Shop;
-import store.service.ShopService;
+import store.bean.Product;
+import store.service.ProductService;
 
 @Controller
-public class ShopController {
+public class ProductController {
 
     @Autowired
-    private ShopService shopService;
+    private ProductService productService;
 
     /**
-     * 商铺列表页面
+     * 产品列表页面
      */
-    @RequestMapping("/Shop_list")
-    public String shopList(Model model) {
+    @RequestMapping("/Product_list")
+    public String productList(Model model) {
         // 获取所有分类
-        List<Map<String, Object>> categories = shopService.getAllCategories();
+        List<Map<String, Object>> categories = productService.getAllCategories();
         model.addAttribute("categories", categories);
-        return "Shop_list";
+        return "Product_list";
     }
 
     /**
-     * 获取商铺列表数据
+     * 获取产品列表数据
      */
-    @RequestMapping("/getShopList")
+    @RequestMapping("/getProductList")
     @ResponseBody
-    public Map<String, Object> getShopList(
+    public Map<String, Object> getProductList(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "categoryId", required = false) Integer categoryId,
-            @RequestParam(value = "shopType", required = false) String shopType,
+            @RequestParam(value = "region", required = false) String region,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
             @RequestParam(value = "startTime", required = false) String startTime,
             @RequestParam(value = "endTime", required = false) String endTime,
             @RequestParam(value = "page", defaultValue = "1") int page,
@@ -62,7 +63,9 @@ public class ShopController {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("categoryId", categoryId);
-        params.put("shopType", shopType);
+        params.put("region", region);
+        params.put("minPrice", minPrice);
+        params.put("maxPrice", maxPrice);
         params.put("startTime", startTime);
         params.put("endTime", endTime);
         params.put("start", (page - 1) * limit);
@@ -70,62 +73,64 @@ public class ShopController {
         params.put("sortField", sortField);
         params.put("sortOrder", sortOrder == null ? "asc" : sortOrder);
 
-        List<Shop> shopList = shopService.findShopsByCondition(params);
-        int total = shopService.getShopCount(params);
+        List<Product> productList = productService.findProductsByCondition(params);
+        int total = productService.getProductCount(params);
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", 0);
         result.put("msg", "");
         result.put("count", total);
-        result.put("data", shopList);
+        result.put("data", productList);
 
         return result;
     }
 
     /**
-     * 添加商铺
+     * 添加产品
      */
-    /**
-     * 添加商铺
-     */
-    @RequestMapping(value = "/addShop", method = RequestMethod.POST)
+    @RequestMapping(value = "/addProduct", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> addShop(Shop shop) {
+    public Map<String, Object> addProduct(Product product) {
         Map<String, Object> result = new HashMap<>();
 
         try {
             // 检查必填字段
-            if (shop.getName() == null || shop.getName().trim().isEmpty()) {
+            if (product.getName() == null || product.getName().trim().isEmpty()) {
                 result.put("success", false);
-                result.put("message", "店铺名称不能为空");
+                result.put("message", "产品名称不能为空");
                 return result;
             }
-            if (shop.getCategoryId() == null) {
+            if (product.getCategoryId() == null) {
                 result.put("success", false);
                 result.put("message", "请选择所属分类");
                 return result;
             }
-            if (shop.getShopType() == null || shop.getShopType().trim().isEmpty()) {
+            if (product.getOriginalPrice() == null || product.getOriginalPrice() <= 0) {
                 result.put("success", false);
-                result.put("message", "请选择店铺类型");
+                result.put("message", "请输入有效的原价格");
                 return result;
             }
-            if (shop.getSortOrder() == null) {
+            if (product.getCurrentPrice() == null || product.getCurrentPrice() <= 0) {
+                result.put("success", false);
+                result.put("message", "请输入有效的现价");
+                return result;
+            }
+            if (product.getSortOrder() == null) {
                 result.put("success", false);
                 result.put("message", "编号不能为空");
                 return result;
             }
 
             // 检查编号是否已存在
-            if (shopService.checkSortOrderExists(shop.getSortOrder())) {
+            if (productService.checkSortOrderExists(product.getSortOrder())) {
                 result.put("success", false);
                 result.put("message", "该编号已存在，请使用其他编号");
                 return result;
             }
 
             // 设置默认状态为待审核
-            shop.setStatus(0);
-            shopService.addShop(shop);
+            product.setStatus(0);
+            productService.addProduct(product);
 
             result.put("success", true);
             result.put("message", "添加成功");
@@ -136,51 +141,50 @@ public class ShopController {
 
         return result;
     }
+
     /**
-     * 检查商铺编号是否存在
+     * 检查产品编号是否存在
      */
-    @RequestMapping("/shop/checkSortOrderExists")
+    @RequestMapping("/product/checkSortOrderExists")
     @ResponseBody
     public Map<String, Object> checkSortOrderExists(Integer sortOrder) {
         Map<String, Object> result = new HashMap<>();
-        result.put("exists", shopService.checkSortOrderExists(sortOrder));
+        result.put("exists", productService.checkSortOrderExists(sortOrder));
         return result;
     }
+
     /**
-     * 更新商铺
+     * 更新产品
      */
-    /**
-     * 更新商铺
-     */
-    @RequestMapping(value = "/updateShop", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateProduct", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> updateShop(Shop shop) {
+    public Map<String, Object> updateProduct(Product product) {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            // 获取原商铺信息
-            Shop oldShop = shopService.findById(shop.getId());
-            if (oldShop == null) {
+            // 获取原产品信息
+            Product oldProduct = productService.findById(product.getId());
+            if (oldProduct == null) {
                 result.put("success", false);
-                result.put("message", "商铺不存在");
+                result.put("message", "产品不存在");
                 return result;
             }
 
-            // 检查店铺名称是否已存在（排除自己）
-            if (!oldShop.getName().equals(shop.getName()) && shopService.checkShopNameExists(shop.getName())) {
+            // 检查产品名称是否已存在（排除自己）
+            if (!oldProduct.getName().equals(product.getName()) && productService.checkProductNameExists(product.getName())) {
                 result.put("success", false);
-                result.put("message", "店铺名称已存在");
+                result.put("message", "产品名称已存在");
                 return result;
             }
 
             // 检查编号是否已存在（排除自己）
-            if (!oldShop.getSortOrder().equals(shop.getSortOrder()) && shopService.checkSortOrderExists(shop.getSortOrder())) {
+            if (!oldProduct.getSortOrder().equals(product.getSortOrder()) && productService.checkSortOrderExists(product.getSortOrder())) {
                 result.put("success", false);
                 result.put("message", "该编号已存在，请使用其他编号");
                 return result;
             }
 
-            shopService.updateShop(shop);
+            productService.updateProduct(product);
 
             result.put("success", true);
             result.put("message", "更新成功");
@@ -191,16 +195,17 @@ public class ShopController {
 
         return result;
     }
+
     /**
-     * 删除商铺
+     * 删除产品
      */
-    @RequestMapping(value = "/deleteShop", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteProduct", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> deleteShop(Integer id) {
+    public Map<String, Object> deleteProduct(Integer id) {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            shopService.deleteShop(id);
+            productService.deleteProduct(id);
             result.put("success", true);
             result.put("message", "删除成功");
         } catch (Exception e) {
@@ -212,15 +217,15 @@ public class ShopController {
     }
 
     /**
-     * 批量删除商铺
+     * 批量删除产品
      */
-    @RequestMapping(value = "/batchDeleteShops", method = RequestMethod.POST)
+    @RequestMapping(value = "/batchDeleteProducts", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> batchDeleteShops(@RequestParam("ids[]") List<Integer> ids) {
+    public Map<String, Object> batchDeleteProducts(@RequestParam("ids[]") List<Integer> ids) {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            shopService.batchDeleteShops(ids);
+            productService.batchDeleteProducts(ids);
             result.put("success", true);
             result.put("message", "批量删除成功");
         } catch (Exception e) {
@@ -232,43 +237,43 @@ public class ShopController {
     }
 
     /**
-     * 根据ID获取商铺信息
+     * 根据ID获取产品信息
      */
-    @RequestMapping("/getShopById")
+    @RequestMapping("/getProductById")
     @ResponseBody
-    public Map<String, Object> getShopById(Integer id) {
+    public Map<String, Object> getProductById(Integer id) {
         Map<String, Object> result = new HashMap<>();
 
-        Shop shop = shopService.findById(id);
-        if (shop != null) {
+        Product product = productService.findById(id);
+        if (product != null) {
             result.put("success", true);
-            result.put("data", shop);
+            result.put("data", product);
         } else {
             result.put("success", false);
-            result.put("message", "商铺不存在");
+            result.put("message", "产品不存在");
         }
 
         return result;
     }
 
     /**
-     * 检查商铺名称是否存在
+     * 检查产品名称是否存在
      */
-    @RequestMapping("/checkShopName")
+    @RequestMapping("/checkProductName")
     @ResponseBody
-    public Map<String, Object> checkShopName(String name) {
+    public Map<String, Object> checkProductName(String name) {
         Map<String, Object> result = new HashMap<>();
-        result.put("exists", shopService.checkShopNameExists(name));
+        result.put("exists", productService.checkProductNameExists(name));
         return result;
     }
 
     /**
-     * 获取所有商铺分类
+     * 获取所有产品分类
      */
-    @RequestMapping("/shop/getAllCategories")
+    @RequestMapping("/product/getAllCategories")
     @ResponseBody
     public List<Map<String, Object>> getAllCategories() {
-        return shopService.getAllCategories();
+        return productService.getAllCategories();
     }
 
     @InitBinder

@@ -3,27 +3,40 @@ package store.mapper;
 import store.bean.User;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+import java.util.List;
+
 public interface UserMapper {
-
-    // 根据用户名查询用户
     User findByUsername(String username);
-
-    // 更新用户登录尝试次数
-    void updateLoginAttempts(@Param("id") Integer id, @Param("loginAttempts") Integer loginAttempts);
-
-    // 更新用户状态（锁定/解锁）
-    void updateUserStatus(@Param("id") Integer id, @Param("status") Integer status);
-
-    // 更新最后登录时间
-    void updateLastLoginTime(@Param("id") Integer id, @Param("lastLoginTime") java.util.Date lastLoginTime);
-    // 根据邮箱查询用户
     User findByEmail(String email);
-    // 添加用户
-    void addUser(User user);
-
-    // 获取所有用户（管理员使用）
-    java.util.List<User> getAllUsers();
-
-    // 根据ID查询用户
     User findById(Integer id);
+
+    List<User> getAllUsers();
+    List<User> getUsersByPage(@Param("offset") int offset,
+                              @Param("limit") int limit,
+                              @Param("username") String username,
+                              @Param("status") Integer status,
+                              @Param("userLevel") String userLevel,
+                              @Param("startTime") Date startTime,
+                              @Param("endTime") Date endTime,
+                              @Param("sortField") String sortField,
+                              @Param("sortOrder") String sortOrder);
+
+    int countUsers(@Param("username") String username,
+                   @Param("status") Integer status,
+                   @Param("userLevel") String userLevel,
+                   @Param("startTime") Date startTime,
+                   @Param("endTime") Date endTime);
+
+    void addUser(User user);
+    void updateUser(User user);
+    void deleteUser(Integer id);
+    void batchDeleteUsers(@Param("ids") List<Integer> ids);
+
+    void updateLoginAttempts(@Param("id") Integer id, @Param("loginAttempts") Integer loginAttempts);
+    void updateUserStatus(@Param("id") Integer id, @Param("status") Integer status);
+    void updateLastLoginTime(@Param("id") Integer id, @Param("lastLoginTime") Date lastLoginTime);
+
+    boolean checkUsernameExists(@Param("username") String username, @Param("excludeId") Integer excludeId);
+
 }

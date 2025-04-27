@@ -1,133 +1,197 @@
-//package store.controller;
-//
-//import javax.servlet.http.HttpSession;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.ResponseBody;
-//
-//import store.bean.ResponseResult;
-//import store.bean.User;
-//import store.service.UserService;
-//import store.util.CaptchaUtil;
-//
-//@Controller
-//public class UserController {
-//
-//    @Autowired
-//    private UserService userService;
-//
-//    /**
-//     * 跳转到登录页面
-//     */
-//    @GetMapping("/login")
-//    public String toLogin() {
-//        return "login";
-//    }
-//
-//    /**
-//     * 跳转到注册页面
-//     */
-//    @GetMapping("/register")
-//    public String toRegister() {
-//        return "register";
-//    }
-//
-//    /**
-//     * 用户登录处理
-//     */
-//    @PostMapping("/login")
-//    @ResponseBody
-//    public ResponseResult login(
-//            @RequestParam("username") String username,
-//            @RequestParam("password") String password,
-//            @RequestParam(value = "captcha", required = false) String captcha,
-//            HttpSession session) {
-//
-//        // 验证用户名和密码是否为空
-//        if(username == null || username.trim().isEmpty()) {
-//            return ResponseResult.error("用户名不能为空");
-//        }
-//        if(password == null || password.trim().isEmpty()) {
-//            return ResponseResult.error("密码不能为空");
-//        }
-//
-//        // 检查是否需要验证码
-//        User tempUser = userService.getUserByUsername(username);
-//        if(tempUser != null && tempUser.getLoginAttempts() >= 3) {
-//            // 需要验证码
-//            String sessionCaptcha = (String) session.getAttribute("captcha");
-//            if(!userService.validateCaptcha(captcha, sessionCaptcha)) {
-//                return ResponseResult.error("验证码错误");
-//            }
-//        }
-//
-//        // 登录验证
-//        ResponseResult result = userService.login(username, password);
-//
-//        // 如果登录成功，将用户信息存入session
-//        if(result.getState() == ResponseResult.SUCCESS) {
-//            User user = (User) result.getData();
-//            session.setAttribute("user", user);
-//
-//            // 更新登录时间
-//            userService.updateLoginStatus(username);
-//        }
-//
-//        return result;
-//    }
-//
-//    /**
-//     * 生成验证码
-//     */
-//    @GetMapping("/captcha")
-//    public void generateCaptcha(HttpSession session) {
-//        // 生成验证码，并将验证码存入session
-//        String captcha = CaptchaUtil.generateCaptcha();
-//        session.setAttribute("captcha", captcha);
-//    }
-//
-//    /**
-//     * 检查用户名是否存在
-//     */
-//    @GetMapping("/check_username")
-//    @ResponseBody
-//    public ResponseResult checkUsername(@RequestParam("username") String username) {
-//        boolean exists = userService.checkUsername(username);
-//        if(exists) {
-//            return ResponseResult.error("用户名已存在");
-//        } else {
-//            return ResponseResult.success();
-//        }
-//    }
-//
-//    /**
-//     * 用户注册
-//     */
-//    @PostMapping("/register")
-//    @ResponseBody
-//    public ResponseResult register(User user) {
-//        return userService.register(user);
-//    }
-//
-//    /**
-//     * 用户登出
-//     */
-//    @GetMapping("/logout")
-//    public String logout(HttpSession session) {
-//        session.invalidate();
-//        return "redirect:/login";
-//    }
-//
-//    /**
-//     * 解锁用户
-//     */
-//    @PostMapping("/unlock_user")
-//    @ResponseBody
-//    public ResponseResult unlockUser(@RequestParam("username") String username) {
-//        return userService.unlockUser(username);
-//    }
-//}
+package store.controller;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import store.bean.User;
+import store.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping("/user")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/list")
+    public String userList() {
+        return "user_list";
+    }
+
+    @GetMapping("/data")
+    @ResponseBody
+    public Map<String, Object> getUserData(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "status", required = false) Integer status,
+            @RequestParam(value = "userLevel", required = false) String userLevel,
+            @RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endTime,
+            @RequestParam(value = "sortField", required = false) String sortField,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder) {
+
+        Map<String, Object> result = new HashMap<>();
+        List<User> users = userService.getUsersByPage(page, limit, username, status, userLevel, startTime, endTime, sortField, sortOrder);
+        int count = userService.countUsers(username, status, userLevel, startTime, endTime);
+
+        result.put("code", 0);
+        result.put("msg", "");
+        result.put("count", count);
+        result.put("data", users);
+
+        return result;
+    }
+
+    @PostMapping("/add")
+    @ResponseBody
+    public Map<String, Object> addUser(User user) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 验证必填字段
+            if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+                throw new RuntimeException("用户名不能为空");
+            }
+            if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                throw new RuntimeException("密码不能为空");
+            }
+            if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+                throw new RuntimeException("邮箱不能为空");
+            }
+
+            userService.addUser(user);
+            result.put("success", true);
+            result.put("message", "添加用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+    @GetMapping("/get")
+    @ResponseBody
+    public Map<String, Object> getUser(@RequestParam Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            User user = userService.getUserById(id);
+            if (user != null) {
+                result.put("success", true);
+                result.put("data", user);
+            } else {
+                result.put("success", false);
+                result.put("message", "用户不存在");
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+    @PostMapping("/update")
+    @ResponseBody
+    public Map<String, Object> updateUser(User user) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.updateUser(user);
+            result.put("success", true);
+            result.put("message", "更新用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public Map<String, Object> deleteUser(@RequestParam Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.deleteUser(id);
+            result.put("success", true);
+            result.put("message", "删除用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/batchDelete")
+    @ResponseBody
+    public Map<String, Object> batchDeleteUsers(@RequestParam("ids[]") List<Integer> ids) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.batchDeleteUsers(ids);
+            result.put("success", true);
+            result.put("message", "批量删除用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/lock")
+    @ResponseBody
+    public Map<String, Object> lockUser(@RequestParam Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.updateUserStatus(id, 1);
+            result.put("success", true);
+            result.put("message", "锁定用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/unlock")
+    @ResponseBody
+    public Map<String, Object> unlockUser(@RequestParam Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.unlockUser(id);
+            result.put("success", true);
+            result.put("message", "解锁用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @PostMapping("/disable")
+    @ResponseBody
+    public Map<String, Object> disableUser(@RequestParam Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            userService.updateUserStatus(id, 2);
+            result.put("success", true);
+            result.put("message", "禁用用户成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    @GetMapping("/checkUsername")
+    @ResponseBody
+    public Map<String, Object> checkUsernameExists(
+            @RequestParam String username,
+            @RequestParam(required = false) Integer excludeId) {
+        Map<String, Object> result = new HashMap<>();
+        boolean exists = userService.checkUsernameExists(username, excludeId);
+        result.put("exists", exists);
+        return result;
+    }
+}

@@ -353,7 +353,7 @@
                     <li class="home"><a href="javascript:void(0)" name="home" class="iframeurl" title=""><i class="icon-home"></i><span class="menu-text"> 系统首页 </span></a></li>
                     <li><a href="#" class="dropdown-toggle"><i class="icon-desktop"></i><span class="menu-text"> 产品管理 </span><b class="arrow icon-angle-down"></b></a>
                         <ul class="submenu">
-                            <li class="home"><a  href="javascript:void(0)" name="Products_List"  title="产品类表" class="iframeurl"><i class="icon-double-angle-right"></i>产品类表</a></li>
+                            <li class="home"><a  href="javascript:void(0)" name="Product_list"  title="产品类表" class="iframeurl"><i class="icon-double-angle-right"></i>产品类表</a></li>
                             <li class="home"><a  href="javascript:void(0)" name="Brand_Manage" title="品牌管理"  class="iframeurl"><i class="icon-double-angle-right"></i>品牌管理</a></li>
                             <li class="home"><a href="javascript:void(0)" name="Category_Manage" title="分类管理"  class="iframeurl"><i class="icon-double-angle-right"></i>分类管理</a></li>
 
@@ -397,7 +397,7 @@
                     <li><a href="#" class="dropdown-toggle"><i class="icon-laptop"></i><span class="menu-text"> 店铺管理 </span><b class="arrow icon-angle-down"></b></a>
                         <ul class="submenu">
                             <li class="home"><a href="javascript:void(0)" name="Shop_list" title="店铺列表" class="iframeurl"><i class="icon-double-angle-right"></i>店铺列表</a></li>
-                            <li class="home"><a href="javascript:void(0)" name="Shops_Audit" title="店铺审核" class="iframeurl"><i class="icon-double-angle-right"></i>店铺审核<span class="badge badge-danger">5</span></a></li>
+<%--                            <li class="home"><a href="javascript:void(0)" name="Shops_Audit" title="店铺审核" class="iframeurl"><i class="icon-double-angle-right"></i>店铺审核<span class="badge badge-danger">5</span></a></li>--%>
                         </ul>
                     </li>
                     <li><a href="#" class="dropdown-toggle"><i class="icon-comments-alt"></i><span class="menu-text"> 消息管理 </span><b class="arrow icon-angle-down"></b></a>
@@ -408,8 +408,8 @@
                     </li>
                     <li><a href="#" class="dropdown-toggle"><i class="icon-bookmark"></i><span class="menu-text"> 文章管理 </span><b class="arrow icon-angle-down"></b></a>
                         <ul class="submenu">
-                            <li class="home"><a href="javascript:void(0)" name="article_list" title="文章列表" class="iframeurl"><i class="icon-double-angle-right"></i>文章列表</a></li>
-                            <li class="home"><a href="javascript:void(0)" name="article_Sort" title="分类管理" class="iframeurl"><i class="icon-double-angle-right"></i>分类管理</a></li>
+                            <li class="home"><a href="javascript:void(0)" name="Article_list" title="文章列表" class="iframeurl"><i class="icon-double-angle-right"></i>文章列表</a></li>
+<%--                            <li class="home"><a href="javascript:void(0)" name="article_Sort" title="分类管理" class="iframeurl"><i class="icon-double-angle-right"></i>分类管理</a></li>--%>
                         </ul>
                     </li>
                     <li><a href="#" class="dropdown-toggle"><i class="icon-cogs"></i><span class="menu-text"> 系统管理 </span><b class="arrow icon-angle-down"></b></a>

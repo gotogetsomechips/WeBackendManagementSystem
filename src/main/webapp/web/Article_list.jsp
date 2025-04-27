@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -26,7 +26,7 @@
     <script src="assets/laydate/laydate.js" type="text/javascript"></script>
     <script src="js/H-ui.js" type="text/javascript"></script>
     <script src="js/displayPart.js" type="text/javascript"></script>
-    <title>商铺管理</title>
+    <title>文章管理</title>
 </head>
 
 <body>
@@ -38,32 +38,27 @@
                 <div class="side_title"><a title="隐藏" class="close_btn"><span></span></a></div>
                 <div class="side_list">
                     <div class="widget-header header-color-green2">
-                        <h4 class="lighter smaller">店铺分类</h4>
+                        <h4 class="lighter smaller">文章分类</h4>
                     </div>
                     <div class="widget-body">
                         <ul class="b_P_Sort_list">
                             <li><i class="orange fa fa-list"></i><a href="javascript:void(0)" onclick="filterByCategory(0)">全部</a></li>
                             <c:forEach items="${categories}" var="category">
-                                <li><i class="fa fa-shopping-bag pink"></i><a href="javascript:void(0)" onclick="filterByCategory(${category.id})">${category.name}</a></li>
+                                <li><i class="fa fa-newspaper-o pink"></i>
+                                    <a href="javascript:void(0)" onclick="filterByCategory(${category.id})">${category.name}</a>
+                                </li>
                             </c:forEach>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <!--商铺列表-->
+        <!--文章列表-->
         <div class="Ads_list">
             <div class="search_style">
                 <form id="searchForm">
                     <ul class="search_content clearfix">
-                        <li><label class="l_f">商铺名称</label><input name="name" type="text" class="text_add" placeholder="商铺名称" style="width:150px"></li>
-                        <li><label class="l_f">商铺类型</label>
-                            <select name="shopType" style="width:150px">
-                                <option value="">--选择商铺类型--</option>
-                                <option value="个人店铺">个人店铺</option>
-                                <option value="企业店铺">企业店铺</option>
-                            </select>
-                        </li>
+                        <li><label class="l_f">文章标题</label><input name="title" type="text" class="text_add" placeholder="文章标题" style="width:150px"></li>
                         <li><label class="l_f">所属分类</label>
                             <select name="categoryId" style="width:150px">
                                 <option value="">--选择分类--</option>
@@ -72,34 +67,41 @@
                                 </c:forEach>
                             </select>
                         </li>
+                        <li><label class="l_f">状态</label>
+                            <select name="status" style="width:150px">
+                                <option value="">--全部状态--</option>
+                                <option value="0">待发布</option>
+                                <option value="1">显示</option>
+                                <option value="2">隐藏</option>
+                            </select>
+                        </li>
                         <li><label class="l_f">添加时间</label><input class="inline laydate-icon" id="startTime" name="startTime" style="margin-left:10px;">至<input class="inline laydate-icon" id="endTime" name="endTime"></li>
-                        <li style="width:90px;"><button type="button" class="btn_search" onclick="searchShops()"><i class="fa fa-search"></i>查询</button></li>
+                        <li style="width:90px;"><button type="button" class="btn_search" onclick="searchArticles()"><i class="fa fa-search"></i>查询</button></li>
                     </ul>
                 </form>
             </div>
             <div class="border clearfix">
-       <span class="l_f">
-         <a href="javascript:void(0)" title="添加店铺" class="btn btn-warning" onclick="showAddShopModal()"><i class="icon-plus"></i>添加店铺</a>
-         <a href="javascript:void(0)" class="btn btn-danger" onclick="batchDelete()"><i class="fa fa-trash"></i> 批量删除</a>
-       </span>
-                <span class="r_f">共：<b id="totalCount">0</b>家</span>
+                <span class="l_f">
+                    <a href="javascript:void(0)" title="添加文章" class="btn btn-warning" onclick="showAddArticleModal()"><i class="fa fa-plus"></i>添加文章</a>
+                    <a href="javascript:void(0)" class="btn btn-danger" onclick="batchDelete()"><i class="fa fa-trash"></i>批量删除</a>
+                </span>
+                <span class="r_f">共：<b id="totalCount">0</b>篇</span>
             </div>
             <div class="article_list">
-                <table class="table table-striped table-bordered table-hover" id="shopTable">
+                <table class="table table-striped table-bordered table-hover" id="articleTable">
                     <thead>
                     <tr>
                         <th width="25"><label><input type="checkbox" class="ace" id="selectAll"><span class="lbl"></span></label></th>
                         <th width="80px"><a href="javascript:void(0)" onclick="sortBy('sort_order')">编号<span id="sort_order_icon"></span></a></th>
-                        <th width="180">店铺名称</th>
                         <th width="120px">所属分类</th>
-                        <th width="120px">店铺类型</th>
-                        <th width="300px">简介</th>
+                        <th width="220px">标题</th>
+                        <th>简介</th>
                         <th width="150px">添加时间</th>
-                        <th width="100px">审核状态</th>
-                        <th width="250px">操作</th>
+                        <th width="80px">状态</th>
+                        <th width="150px">操作</th>
                     </tr>
                     </thead>
-                    <tbody id="shopList">
+                    <tbody id="articleList">
                     </tbody>
                 </table>
 
@@ -110,13 +112,13 @@
     </div>
 </div>
 
-<!-- 添加商铺表单 -->
-<div id="addShopModal" style="display:none;padding:20px;">
-    <form id="addShopForm" class="form-horizontal">
+<!-- 添加文章表单 -->
+<div id="addArticleModal" style="display:none;padding:20px;">
+    <form id="addArticleForm" class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺名称：</label>
+            <label class="col-sm-3 control-label">文章标题：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="title" required>
             </div>
         </div>
         <div class="form-group">
@@ -131,42 +133,49 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺类型：</label>
-            <div class="col-sm-9">
-                <select class="form-control" name="shopType" required>
-                    <option value="">--请选择类型--</option>
-                    <option value="个人店铺">个人店铺</option>
-                    <option value="企业店铺">企业店铺</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
                 <input type="number" class="form-control" name="sortOrder" value="0" required>
             </div>
         </div>
         <div class="form-group">
+            <label class="col-sm-3 control-label">状态：</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="status" required>
+                    <option value="0">待发布</option>
+                    <option value="1">显示</option>
+                    <option value="2">隐藏</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
             <label class="col-sm-3 control-label">简介：</label>
             <div class="col-sm-9">
-                <textarea class="form-control" name="description" rows="4"></textarea>
+                <textarea class="form-control" name="summary" rows="4"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">内容：</label>
+            <div class="col-sm-9">
+                <textarea class="form-control" name="content" rows="6"></textarea>
             </div>
         </div>
     </form>
 </div>
+
 <!-- 详情模态框 -->
-<div id="detailShopModal" style="display:none;padding:20px;">
+<div id="detailArticleModal" style="display:none;padding:20px;">
     <div class="form-horizontal">
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺编号：</label>
+            <label class="col-sm-3 control-label">文章编号：</label>
             <div class="col-sm-9">
                 <p class="form-control-static" id="detailSortOrder"></p>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺名称：</label>
+            <label class="col-sm-3 control-label">文章标题：</label>
             <div class="col-sm-9">
-                <p class="form-control-static" id="detailName"></p>
+                <p class="form-control-static" id="detailTitle"></p>
             </div>
         </div>
         <div class="form-group">
@@ -176,13 +185,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺类型：</label>
-            <div class="col-sm-9">
-                <p class="form-control-static" id="detailShopType"></p>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-3 control-label">审核状态：</label>
+            <label class="col-sm-3 control-label">状态：</label>
             <div class="col-sm-9">
                 <p class="form-control-static" id="detailStatus"></p>
             </div>
@@ -202,19 +205,26 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">简介：</label>
             <div class="col-sm-9">
-                <div class="form-control-static" id="detailDescription" style="height:auto;min-height:100px;"></div>
+                <div class="form-control-static" id="detailSummary" style="height:auto;min-height:50px;"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">内容：</label>
+            <div class="col-sm-9">
+                <div class="form-control-static" id="detailContent" style="height:auto;min-height:100px;"></div>
             </div>
         </div>
     </div>
 </div>
-<!-- 编辑商铺表单 -->
-<div id="editShopModal" style="display:none;padding:20px;">
-    <form id="editShopForm" class="form-horizontal">
+
+<!-- 编辑文章表单 -->
+<div id="editArticleModal" style="display:none;padding:20px;">
+    <form id="editArticleForm" class="form-horizontal">
         <input type="hidden" name="id">
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺名称：</label>
+            <label class="col-sm-3 control-label">文章标题：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="title" required>
             </div>
         </div>
         <div class="form-group">
@@ -229,35 +239,31 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商铺类型：</label>
-            <div class="col-sm-9">
-                <select class="form-control" name="shopType" required>
-                    <option value="">--请选择类型--</option>
-                    <option value="个人店铺">个人店铺</option>
-                    <option value="企业店铺">企业店铺</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
                 <input type="number" class="form-control" name="sortOrder" required>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">审核状态：</label>
+            <label class="col-sm-3 control-label">状态：</label>
             <div class="col-sm-9">
                 <select class="form-control" name="status" required>
-                    <option value="0">待审核</option>
-                    <option value="1">通过</option>
-                    <option value="2">拒绝</option>
+                    <option value="0">待发布</option>
+                    <option value="1">显示</option>
+                    <option value="2">隐藏</option>
                 </select>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">简介：</label>
             <div class="col-sm-9">
-                <textarea class="form-control" name="description" rows="4"></textarea>
+                <textarea class="form-control" name="summary" rows="4"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">内容：</label>
+            <div class="col-sm-9">
+                <textarea class="form-control" name="content" rows="6"></textarea>
             </div>
         </div>
     </form>
@@ -268,10 +274,6 @@
     var currentPage = 1;
     // 每页记录数
     var pageSize = 10;
-    // 编号字段和顺序
-    var sortField = "";
-    var sortOrder = "asc";
-
     $(function () {
         // 显示部分文本
         $(".displayPart").displayPart();
@@ -287,35 +289,68 @@
         });
 
         // 初始化表格
-        loadShopList();
+        loadArticleList();
 
         // 全选/取消全选
         $("#selectAll").on('click', function(){
-            $("input[name='shopIds']").prop("checked", this.checked);
+            $("input[name='articleIds']").prop("checked", this.checked);
         });
     });
 
-    // 加载商铺列表
-    function loadShopList() {
+    // 加载文章列表
+    function loadArticleList() {
         var params = $("#searchForm").serialize();
         params += "&page=" + currentPage + "&limit=" + pageSize;
-        params += "&sortField=" + sortField + "&sortOrder=" + sortOrder;
 
         $.ajax({
-            url: "getShopList",
+            url: "getArticleList",
             type: "get",
             data: params,
             dataType: "json",
             success: function(response) {
-                renderShopList(response);
+                renderArticleList(response);
+                // 在渲染完成后，根据当前的排序状态对页面数据进行排序
+                if (currentSortField) {
+                    sortCurrentPage();
+                }
             }
+        });
+    }
+    // 对当前页数据进行排序
+    function sortCurrentPage() {
+        if (!currentSortField) return; // 如果没有排序字段，不进行排序
+
+        var columnIndex = getColumnIndex(currentSortField);
+        var rows = $("#articleList tr").get();
+
+        // 根据指定列的值进行排序
+        rows.sort(function(a, b) {
+            var aValue = $(a).children("td").eq(columnIndex).text();
+            var bValue = $(b).children("td").eq(columnIndex).text();
+
+            // 如果是数字类型，转为数字再比较
+            if (currentSortField === 'sort_order') {
+                aValue = parseInt(aValue) || 0;
+                bValue = parseInt(bValue) || 0;
+            }
+
+            // 升序或降序比较
+            if (currentSortOrder === "asc") {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        // 重新添加排序后的行
+        $.each(rows, function(index, row) {
+            $("#articleList").append(row);
         });
     }
     // 辅助函数：获取字段对应的列索引
     function getColumnIndex(field) {
         switch(field) {
             case 'sort_order': return 1; // 编号列是第2列(索引1)
-            // 其他列...
             default: return 0;
         }
     }
@@ -339,36 +374,7 @@
         sortCurrentPage();
     }
 
-    // 对当前页数据进行排序
-    function sortCurrentPage() {
-        if (!currentSortField) return;
-
-        var $tbody = $('#shopTable tbody');
-        var $rows = $tbody.find('tr').get();
-
-        $rows.sort(function(a, b) {
-            var aVal = $(a).find('td').eq(getColumnIndex(currentSortField)).text();
-            var bVal = $(b).find('td').eq(getColumnIndex(currentSortField)).text();
-
-            // 编号列按数字排序
-            if (currentSortField === 'sort_order') {
-                aVal = parseInt(aVal) || 0;
-                bVal = parseInt(bVal) || 0;
-                return currentSortOrder === "asc" ? aVal - bVal : bVal - aVal;
-            }
-            // 其他列按文本排序
-            else {
-                return currentSortOrder === "asc"
-                    ? aVal.localeCompare(bVal)
-                    : bVal.localeCompare(aVal);
-            }
-        });
-
-        // 重新插入排序后的行
-        $tbody.empty().append($rows);
-    }
-
-    // 更新排序图标
+    // 更新排序图标，使用中文显示
     function updateSortIcons() {
         $("[id$='_icon']").text(""); // 清除所有图标
         if (currentSortField) {
@@ -377,42 +383,42 @@
             );
         }
     }
-    // 渲染商铺列表
-    function renderShopList(data) {
-        var shopList = data.data;
+
+    // 渲染文章列表
+    function renderArticleList(data) {
+        var articleList = data.data;
         var total = data.count;
 
         // 更新总数
         $("#totalCount").text(total);
 
         // 清空表格
-        $("#shopList").empty();
+        $("#articleList").empty();
 
         // 渲染数据行
-        if(shopList && shopList.length > 0) {
-            for(var i = 0; i < shopList.length; i++) {
-                var shop = shopList[i];
+        if(articleList && articleList.length > 0) {
+            for(var i = 0; i < articleList.length; i++) {
+                var article = articleList[i];
                 var statusText = "";
-                if(shop.status == 0) statusText = "待审核";
-                else if(shop.status == 1) statusText = "通过";
-                else if(shop.status == 2) statusText = "拒绝";
+                if(article.status == 0) statusText = "待发布";
+                else if(article.status == 1) statusText = "显示";
+                else if(article.status == 2) statusText = "隐藏";
 
                 var row = '<tr>' +
-                    '<td><label><input type="checkbox" class="ace" name="shopIds" value="' + shop.id + '"><span class="lbl"></span></label></td>' +
-                    '<td>' + (shop.sortOrder || 0) + '</td>' +
-                    '<td>' + shop.name + '</td>' +
-                    '<td>' + shop.categoryName + '</td>' +
-                    '<td>' + shop.shopType + '</td>' +
-                    '<td>' + (shop.description ? shop.description : '无') + '</td>' +
-                    '<td>' + formatDate(shop.createTime) + '</td>' +
+                    '<td><label><input type="checkbox" class="ace" name="articleIds" value="' + article.id + '"><span class="lbl"></span></label></td>' +
+                    '<td>' + (article.sortOrder || 0) + '</td>' +
+                    '<td>' + article.categoryName + '</td>' +
+                    '<td>' + article.title + '</td>' +
+                    '<td>' + (article.summary ? article.summary : '无') + '</td>' +
+                    '<td>' + formatDate(article.createTime) + '</td>' +
                     '<td>' + statusText + '</td>' +
                     '<td class="td-manage">' +
-                    '<a title="详情" onclick="viewShopDetail(' + shop.id + ')" class="btn btn-xs btn-success"><i class="fa fa-info-circle bigger-120"></i></a>' +
-                    '<a title="编辑" onclick="editShop(' + shop.id + ')" class="btn btn-xs btn-info"><i class="fa fa-edit bigger-120"></i></a> ' +
-                    '<a title="删除" onclick="deleteShop(' + shop.id + ')" class="btn btn-xs btn-danger"><i class="fa fa-trash bigger-120"></i></a>' +
+                    '<a title="详情" onclick="viewArticleDetail(' + article.id + ')" class="btn btn-xs btn-success"><i class="fa fa-info-circle bigger-120"></i></a>' +
+                    '<a title="编辑" onclick="editArticle(' + article.id + ')" class="btn btn-xs btn-info"><i class="fa fa-edit bigger-120"></i></a> ' +
+                    '<a title="删除" onclick="deleteArticle(' + article.id + ')" class="btn btn-xs btn-danger"><i class="fa fa-trash bigger-120"></i></a>' +
                     '</td>' +
                     '</tr>';
-                $("#shopList").append(row);
+                $("#articleList").append(row);
             }
 
             // 重新初始化显示部分文本
@@ -421,15 +427,16 @@
             // 添加无数据提示
             var searchForm = $("#searchForm").serialize();
             if(searchForm && searchForm !== "") {
-                $("#shopList").append('<tr><td colspan="9" class="text-center">没有找到符合条件的数据，请尝试调整搜索条件</td></tr>');
+                $("#articleList").append('<tr><td colspan="8" class="text-center">没有找到符合条件的文章，请尝试调整搜索条件</td></tr>');
             } else {
-                $("#shopList").append('<tr><td colspan="9" class="text-center">暂无数据</td></tr>');
+                $("#articleList").append('<tr><td colspan="8" class="text-center">暂无数据</td></tr>');
             }
         }
 
         // 生成分页
         renderPagination(total);
-        // 渲染完成后，应用当前排序状态
+
+        // 当前页数据渲染完成后，应用当前排序状态
         if (currentSortField) {
             sortCurrentPage();
         }
@@ -504,35 +511,35 @@
         $("#pagination").html(html);
     }
 
-    // 查看商铺详情
-    function viewShopDetail(id) {
+    // 查看文章详情
+    function viewArticleDetail(id) {
         $.ajax({
-            url: "getShopById",
+            url: "getArticleById",
             type: "get",
             data: {id: id},
             dataType: "json",
             success: function(response) {
                 if(response.success) {
-                    var shop = response.data;
+                    var article = response.data;
                     var statusText = "";
-                    if(shop.status == 0) statusText = "待审核";
-                    else if(shop.status == 1) statusText = "通过";
-                    else if(shop.status == 2) statusText = "拒绝";
+                    if(article.status == 0) statusText = "待发布";
+                    else if(article.status == 1) statusText = "显示";
+                    else if(article.status == 2) statusText = "隐藏";
 
-                    $("#detailSortOrder").text(shop.sortOrder || 0);
-                    $("#detailName").text(shop.name);
-                    $("#detailCategory").text(shop.categoryName);
-                    $("#detailShopType").text(shop.shopType);
+                    $("#detailSortOrder").text(article.sortOrder || 0);
+                    $("#detailTitle").text(article.title);
+                    $("#detailCategory").text(article.categoryName);
                     $("#detailStatus").text(statusText);
-                    $("#detailCreateTime").text(formatDate(shop.createTime));
-                    $("#detailUpdateTime").text(formatDate(shop.updateTime));
-                    $("#detailDescription").text(shop.description || "无");
+                    $("#detailCreateTime").text(formatDate(article.createTime));
+                    $("#detailUpdateTime").text(formatDate(article.updateTime));
+                    $("#detailSummary").text(article.summary || "无");
+                    $("#detailContent").text(article.content || "无");
 
                     layer.open({
                         type: 1,
-                        title: '商铺详情',
-                        area: ['600px', '600px'],
-                        content: $("#detailShopModal"),
+                        title: '文章详情',
+                        area: ['700px', '600px'],
+                        content: $("#detailArticleModal"),
                         btn: ['关闭']
                     });
                 } else {
@@ -546,7 +553,7 @@
     function gotoFirstPage() {
         if(currentPage !== 1) {
             currentPage = 1;
-            loadShopList();
+            loadArticleList();
         } else {
             showPageTip('已经是第一页了');
         }
@@ -556,7 +563,7 @@
     function gotoPrevPage() {
         if(currentPage > 1) {
             currentPage--;
-            loadShopList();
+            loadArticleList();
         } else {
             showPageTip('已经是第一页了');
         }
@@ -566,7 +573,7 @@
     function gotoNextPage(totalPages) {
         if(currentPage < totalPages) {
             currentPage++;
-            loadShopList();
+            loadArticleList();
         } else {
             showPageTip('已经是最后一页了');
         }
@@ -576,7 +583,7 @@
     function gotoLastPage(totalPages) {
         if(currentPage !== totalPages) {
             currentPage = totalPages;
-            loadShopList();
+            loadArticleList();
         } else {
             showPageTip('已经是最后一页了');
         }
@@ -585,25 +592,25 @@
     // 跳转到指定页
     function gotoPage(page) {
         currentPage = page;
-        loadShopList();
+        loadArticleList();
     }
 
     // 输入页码跳转
     function gotoInputPage(totalPages) {
         var inputPage = parseInt($("#pageInput").val());
 
-        if(isNaN(inputPage) || inputPage <= 0) {
+        if(isNaN(inputPage)) {
             showPageTip('请输入有效的页码');
             return;
         }
 
-        if(inputPage > totalPages) {
-            showPageTip('页码超出范围，最大页码为 ' + totalPages);
+        if(inputPage < 1 || inputPage > totalPages) {
+            showPageTip('页码超出范围，有效页码为 1 到 ' + totalPages);
             return;
         }
 
         currentPage = inputPage;
-        loadShopList();
+        loadArticleList();
     }
 
     // 显示页面提示信息
@@ -611,38 +618,65 @@
         layer.msg(message, {icon: 0, time: 1500});
     }
 
-    // 搜索商铺
-    function searchShops() {
+    // 搜索文章
+    function searchArticles() {
         currentPage = 1;
-        loadShopList();
+        loadArticleList();
     }
 
     // 根据分类筛选
     function filterByCategory(categoryId) {
         $("select[name='categoryId']").val(categoryId);
-        searchShops();
+        searchArticles();
     }
 
-    // 显示添加商铺模态框
-    function showAddShopModal() {
+    // 添加文章表单验证
+    function showAddArticleModal() {
         // 重置表单
-        $("#addShopForm")[0].reset();
+        $("#addArticleForm")[0].reset();
 
         layer.open({
             type: 1,
-            title: '添加商铺',
-            area: ['550px', '500px'],
-            content: $("#addShopModal"),
+            title: '添加文章',
+            area: ['600px', '600px'],
+            content: $("#addArticleModal"), // 这里修改为正确的模态框ID
             btn: ['提交', '取消'],
             yes: function(index) {
-                // 获取分类名称
+                // 验证必填项
+                var title = $("#addArticleForm input[name='title']").val();
                 var categoryId = $("#categorySelect").val();
+                var sortOrder = $("#addArticleForm input[name='sortOrder']").val();
+                var status = $("#addArticleForm select[name='status']").val();
+                var content = $("#addArticleForm textarea[name='content']").val();
+
+                if(!title) {
+                    layer.msg('请填写文章标题', {icon: 2, time: 2000});
+                    return;
+                }
+                if(!categoryId) {
+                    layer.msg('请选择所属分类', {icon: 2, time: 2000});
+                    return;
+                }
+                if(!sortOrder) {
+                    layer.msg('请填写编号', {icon: 2, time: 2000});
+                    return;
+                }
+                if(!status) {
+                    layer.msg('请选择状态', {icon: 2, time: 2000});
+                    return;
+                }
+                if(!content) {
+                    layer.msg('请填写文章内容', {icon: 2, time: 2000});
+                    return;
+                }
+
+                // 获取分类名称
                 var categoryName = $("#categorySelect option:selected").text();
 
-                var formData = $("#addShopForm").serialize() + "&categoryName=" + encodeURIComponent(categoryName);
+                var formData = $("#addArticleForm").serialize() + "&categoryName=" + encodeURIComponent(categoryName);
 
                 $.ajax({
-                    url: "addShop",
+                    url: "addArticle",
                     type: "post",
                     data: formData,
                     dataType: "json",
@@ -650,7 +684,7 @@
                         if(response.success) {
                             layer.msg(response.message, {icon: 1, time: 1000});
                             layer.close(index);
-                            loadShopList();
+                            loadArticleList();
                         } else {
                             layer.msg(response.message, {icon: 2, time: 2000});
                         }
@@ -659,55 +693,54 @@
             }
         });
     }
-
-    // 编辑商铺
-    function editShop(id) {
-        // 获取商铺信息
+    // 编辑文章
+    function editArticle(id) {
+        // 获取文章信息
         $.ajax({
-            url: "getShopById",
+            url: "getArticleById",
             type: "get",
             data: {id: id},
             dataType: "json",
             success: function(response) {
                 if(response.success) {
-                    var shop = response.data;
+                    var article = response.data;
 
                     // 保存原始数据
                     var originalData = {
-                        name: shop.name,
-                        categoryId: shop.categoryId,
-                        shopType: shop.shopType,
-                        sortOrder: shop.sortOrder,
-                        status: shop.status,
-                        description: shop.description
+                        title: article.title,
+                        categoryId: article.categoryId,
+                        sortOrder: article.sortOrder,
+                        status: article.status,
+                        summary: article.summary,
+                        content: article.content
                     };
 
                     // 填充表单
-                    $("#editShopForm input[name='id']").val(shop.id);
-                    $("#editShopForm input[name='name']").val(shop.name);
-                    $("#editShopForm select[name='categoryId']").val(shop.categoryId);
-                    $("#editShopForm select[name='shopType']").val(shop.shopType);
-                    $("#editShopForm input[name='sortOrder']").val(shop.sortOrder);
-                    $("#editShopForm select[name='status']").val(shop.status);
-                    $("#editShopForm textarea[name='description']").val(shop.description);
+                    $("#editArticleForm input[name='id']").val(article.id);
+                    $("#editArticleForm input[name='title']").val(article.title);
+                    $("#editArticleForm select[name='categoryId']").val(article.categoryId);
+                    $("#editArticleForm input[name='sortOrder']").val(article.sortOrder);
+                    $("#editArticleForm select[name='status']").val(article.status);
+                    $("#editArticleForm textarea[name='summary']").val(article.summary);
+                    $("#editArticleForm textarea[name='content']").val(article.content);
 
                     // 打开模态框
                     layer.open({
                         type: 1,
-                        title: '编辑商铺',
-                        area: ['550px', '550px'],
-                        content: $("#editShopModal"),
+                        title: '编辑文章',
+                        area: ['600px', '600px'],
+                        content: $("#editArticleModal"),
                         btn: ['提交', '取消'],
                         yes: function(index) {
                             // 检查是否有修改
                             var isModified = false;
                             var currentData = {
-                                name: $("#editShopForm input[name='name']").val(),
-                                categoryId: $("#editShopForm select[name='categoryId']").val(),
-                                shopType: $("#editShopForm select[name='shopType']").val(),
-                                sortOrder: $("#editShopForm input[name='sortOrder']").val(),
-                                status: $("#editShopForm select[name='status']").val(),
-                                description: $("#editShopForm textarea[name='description']").val()
+                                title: $("#editArticleForm input[name='title']").val(),
+                                categoryId: $("#editArticleForm select[name='categoryId']").val(),
+                                sortOrder: $("#editArticleForm input[name='sortOrder']").val(),
+                                status: $("#editArticleForm select[name='status']").val(),
+                                summary: $("#editArticleForm textarea[name='summary']").val(),
+                                content: $("#editArticleForm textarea[name='content']").val()
                             };
 
                             // 比较每个字段
@@ -724,13 +757,13 @@
                             }
 
                             // 编号唯一性校验
-                            var sortOrder = $("#editShopForm input[name='sortOrder']").val();
-                            var originalSortOrder = shop.sortOrder;
+                            var sortOrder = $("#editArticleForm input[name='sortOrder']").val();
+                            var originalSortOrder = article.sortOrder;
 
                             if(sortOrder != originalSortOrder) {
                                 // 如果编号已修改，需要检查唯一性
                                 $.ajax({
-                                    url: "checkSortOrderExists",
+                                    url: "checkArticleSortOrderExists",
                                     type: "get",
                                     data: {sortOrder: sortOrder},
                                     dataType: "json",
@@ -762,10 +795,10 @@
         var categoryId = $("#editCategorySelect").val();
         var categoryName = $("#editCategorySelect option:selected").text();
 
-        var formData = $("#editShopForm").serialize() + "&categoryName=" + encodeURIComponent(categoryName);
+        var formData = $("#editArticleForm").serialize() + "&categoryName=" + encodeURIComponent(categoryName);
 
         $.ajax({
-            url: "updateShop",
+            url: "updateArticle",
             type: "post",
             data: formData,
             dataType: "json",
@@ -773,7 +806,7 @@
                 if(response.success) {
                     layer.msg(response.message, {icon: 1, time: 1000});
                     layer.close(index);
-                    loadShopList();
+                    loadArticleList();
                 } else {
                     layer.msg(response.message, {icon: 2, time: 2000});
                 }
@@ -781,18 +814,18 @@
         });
     }
 
-    // 删除商铺
-    function deleteShop(id) {
-        layer.confirm('确认要删除该商铺吗？', {icon: 3, title:'提示'}, function(index){
+    // 删除文章
+    function deleteArticle(id) {
+        layer.confirm('确认要删除该文章吗？', {icon: 3, title:'提示'}, function(index){
             $.ajax({
-                url: "deleteShop",
+                url: "deleteArticle",
                 type: "post",
                 data: {id: id},
                 dataType: "json",
                 success: function(response) {
                     if(response.success) {
                         layer.msg(response.message, {icon: 1, time: 1000});
-                        loadShopList();
+                        loadArticleList();
                     } else {
                         layer.msg(response.message, {icon: 2, time: 2000});
                     }
@@ -805,25 +838,25 @@
     // 批量删除
     function batchDelete() {
         var ids = [];
-        $("input[name='shopIds']:checked").each(function(){
+        $("input[name='articleIds']:checked").each(function(){
             ids.push($(this).val());
         });
 
         if(ids.length == 0) {
-            layer.msg('请选择要删除的商铺', {icon: 0, time: 1000});
+            layer.msg('请选择要删除的文章', {icon: 0, time: 1000});
             return;
         }
 
-        layer.confirm('确认要批量删除选中的商铺吗？', {icon: 3, title:'提示'}, function(index){
+        layer.confirm('确认要批量删除选中的文章吗？', {icon: 3, title:'提示'}, function(index){
             $.ajax({
-                url: "batchDeleteShops",
+                url: "batchDeleteArticles",
                 type: "post",
                 data: {"ids[]": ids},
                 dataType: "json",
                 success: function(response) {
                     if(response.success) {
                         layer.msg(response.message, {icon: 1, time: 1000});
-                        loadShopList();
+                        loadArticleList();
                     } else {
                         layer.msg(response.message, {icon: 2, time: 2000});
                     }
@@ -881,3 +914,5 @@
         });
     });
 </script>
+</body>
+</html>

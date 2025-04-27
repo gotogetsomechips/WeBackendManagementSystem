@@ -165,7 +165,7 @@ public class LoginController {
     }
     @RequestMapping("/Products_List")
     public String Products_List() {
-        return "Products_List";
+        return "Product_list";
     }
     @RequestMapping("/Brand_Manage")
     public String Brand_Manage() {
@@ -249,7 +249,7 @@ public class LoginController {
     }
     @RequestMapping("/article_list")
     public String article_list() {
-        return "article_list";
+        return "Article_list";
     }
     @RequestMapping("/article_Sort")
     public String article_Sort() {

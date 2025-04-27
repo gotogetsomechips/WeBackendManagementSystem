@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="store.mapper.ArticleMapper">
+
+    <resultMap id="articleResultMap" type="store.bean.Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="content" column="content"/>
+        <result property="summary" column="summary"/>
+        <result property="status" column="status"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!-- 获取所有文章 -->
+    <select id="getAllArticles" resultMap="articleResultMap">
+        SELECT * FROM t_article ORDER BY sort_order ASC, id DESC
+    </select>
+
+    <!-- 根据条件查询文章 -->
+    <select id="findArticlesByCondition" parameterType="java.util.Map" resultMap="articleResultMap">
+        SELECT * FROM t_article
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY
+        <if test="sortField != null and sortField != ''">
+            ${sortField} ${sortOrder},
+        </if>
+        sort_order ASC, id DESC
+        <if test="start != null and limit != null">
+            LIMIT #{start}, #{limit}
+        </if>
+    </select>
+
+    <!-- 添加文章 -->
+    <insert id="addArticle" parameterType="store.bean.Article" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_article (title, category_id, category_name, content, summary, status, sort_order, create_time, update_time)
+        VALUES (#{title}, #{categoryId}, #{categoryName}, #{content}, #{summary}, #{status}, #{sortOrder}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 更新文章 -->
+    <update id="updateArticle" parameterType="store.bean.Article">
+        UPDATE t_article
+        SET title = #{title},
+            category_id = #{categoryId},
+            category_name = #{categoryName},
+            content = #{content},
+            summary = #{summary},
+            status = #{status},
+            sort_order = #{sortOrder},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除文章 -->
+    <delete id="deleteArticle" parameterType="integer">
+        DELETE FROM t_article WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除文章 -->
+    <delete id="batchDeleteArticles" parameterType="list">
+        DELETE FROM t_article WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据ID查询文章 -->
+    <select id="findById" parameterType="integer" resultMap="articleResultMap">
+        SELECT * FROM t_article WHERE id = #{id}
+    </select>
+
+    <!-- 检查标题是否存在 -->
+    <select id="checkTitleExists" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM t_article WHERE title = #{title}
+    </select>
+
+    <!-- 检查编号是否存在 -->
+    <select id="checkSortOrderExists" parameterType="integer" resultType="int">
+        SELECT COUNT(*) FROM t_article WHERE sort_order = #{sortOrder}
+    </select>
+
+    <!-- 获取所有文章分类 -->
+    <select id="getAllCategories" resultType="java.util.Map">
+        SELECT DISTINCT category_id as id, category_name as name
+        FROM t_article
+        WHERE category_id IS NOT NULL AND category_name IS NOT NULL
+        ORDER BY category_name ASC
+    </select>
+    <!-- 获取文章总数 -->
+    <select id="getArticleCount" parameterType="java.util.Map" resultType="int">
+        SELECT COUNT(*) FROM t_article
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime != null">
+                AND create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

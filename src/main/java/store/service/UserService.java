@@ -2,59 +2,31 @@ package store.service;
 
 import store.bean.User;
 
+import java.util.Date;
+import java.util.List;
+
 public interface UserService {
-
-    /**
-     * 用户登录验证
-     * @param username 用户名
-     * @param password 密码
-     * @return 登录结果状态码
-     * 0: 登录成功
-     * 1: 用户名不存在
-     * 2: 密码错误
-     * 3: 账户已锁定
-     */
     int login(String username, String password);
-
-    /**
-     * 根据用户名获取用户
-     */
     User getUserByUsername(String username);
-
-    /**
-     * 更新登录失败次数
-     */
-    void updateLoginAttempts(Integer id, Integer loginAttempts);
-
-    /**
-     * 锁定用户
-     */
-    void lockUser(Integer id);
-
-    /**
-     * 添加用户
-     */
-    void addUser(User user);
-
-    /**
-     * 根据邮箱查询用户
-     */
     User getUserByEmail(String email);
-    /**
-     * 解锁用户
-     */
+    User getUserById(Integer id);
+
+    List<User> getAllUsers();
+    List<User> getUsersByPage(int page, int limit, String username, Integer status, String userLevel, Date startTime, Date endTime, String sortField, String sortOrder);
+    int countUsers(String username, Integer status, String userLevel, Date startTime, Date endTime);
+
+    void addUser(User user);
+    void updateUser(User user);
+    void deleteUser(Integer id);
+    void batchDeleteUsers(List<Integer> ids);
+
+    void updateLoginAttempts(Integer id, Integer loginAttempts);
+    void updateUserStatus(Integer id, Integer status);
+    void updateLastLoginTime(Integer id);
     void unlockUser(Integer id);
 
-    /**
-     * 更新最后登录时间
-     */
-    void updateLastLoginTime(Integer id);
-
-    /**
-     * 检查是否需要验证码
-     * 当登录失败次数 >= 3时需要验证码
-     */
+    boolean checkUsernameExists(String username, Integer excludeId);
     boolean needCaptcha(String username);
 
-
+    void lockUser(Integer id);
 }
