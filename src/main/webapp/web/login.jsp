@@ -54,9 +54,9 @@
             <form id="loginForm">
               <fieldset>
                 <ul>
-                  <li class="frame_style form_error"><label class="user_icon"></label><input name="username" type="text" id="username"/><i>用户名</i></li>
-                  <li class="frame_style form_error"><label class="password_icon"></label><input name="password" type="password" id="userpwd"/><i>密码</i></li>
-                  <li id="captchaLi" class="frame_style form_error" style="display:none;"><label class="Codes_icon"></label><input name="captcha" type="text" id="Codes_text"/><i>验证码</i><div class="Codes_region"><img id="captchaImg" src="captcha" alt="验证码" onclick="refreshCaptcha()"></div></li>
+                  <li class="frame_style form_error"><label class="user_icon"></label><input name="用户名" type="text" id="username"/><i>用户名</i></li>
+                  <li class="frame_style form_error"><label class="password_icon"></label><input name="密码" type="password" id="userpwd"/><i>密码</i></li>
+                  <li id="captchaLi" class="frame_style form_error" style="display:none;"><label class="Codes_icon"></label><input name="验证码" type="text" id="Codes_text"/><i>验证码</i><div class="Codes_region"><img id="captchaImg" src="captcha" alt="验证码" onclick="refreshCaptcha()"></div></li>
 
                 </ul>
                 <div class="space"></div>

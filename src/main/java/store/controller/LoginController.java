@@ -231,10 +231,10 @@ public class LoginController {
     public String integration() {
         return "integration";
     }
-    @RequestMapping("/Shop_list")
-    public String Shop_list() {
-        return "Shop_list";
-    }
+//    @RequestMapping("/Shop_list")
+//    public String Shop_list() {
+//        return "Shop_list";
+//    }
     @RequestMapping("/Shops_Audit")
     public String Shops_Audit() {
         return "Shops_Audit";

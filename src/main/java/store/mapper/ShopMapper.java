@@ -1,60 +1,40 @@
 package store.mapper;
 
-import store.bean.Shop;
 import java.util.List;
+import java.util.Map;
+import store.bean.Shop;
 import org.apache.ibatis.annotations.Param;
 
 public interface ShopMapper {
-    
-    /**
-     * 查询所有店铺
-     */
-    List<Shop> findAll();
-    
-    /**
-     * 根据ID查询店铺
-     */
-    Shop findById(Integer id);
-    
-    /**
-     * 根据名称查询店铺
-     */
-    Shop findByName(String name);
-    
-    /**
-     * 根据类别查询店铺
-     */
-    List<Shop> findByCategory(Integer categoryId);
-    
-    /**
-     * 添加店铺
-     */
-    Integer insert(Shop shop);
-    
-    /**
-     * 更新店铺
-     */
-    Integer update(Shop shop);
-    
-    /**
-     * 删除店铺
-     */
-    Integer delete(Integer id);
-    
-    /**
-     * 分页查询
-     */
-    List<Shop> findByPage(@Param("start") Integer start, @Param("size") Integer size);
-    
-    /**
-     * 查询总记录数
-     */
-    Integer count();
-    
-    /**
-     * 更新店铺状态
-     */
-    Integer updateStatus(@Param("id") Integer id, @Param("status") Integer status);
 
-    List<Shop> findPending();
+    // 获取所有商铺
+    List<Shop> getAllShops();
+
+    // 根据条件查询商铺
+    List<Shop> findShopsByCondition(Map<String, Object> params);
+
+    // 添加商铺
+    void addShop(Shop shop);
+
+    // 更新商铺
+    void updateShop(Shop shop);
+
+    // 删除商铺
+    void deleteShop(Integer id);
+
+    // 批量删除商铺
+    void batchDeleteShops(@Param("ids") List<Integer> ids);
+
+    // 根据ID查询商铺
+    Shop findById(Integer id);
+    // 检查编号是否存在
+    int checkSortOrderExists(Integer sortOrder);
+    // 检查商铺名称是否存在
+    int checkShopNameExists(String name);
+
+    // 获取所有商铺分类
+    List<Map<String, Object>> getAllCategories();
+
+    // 获取商铺总数
+    int getShopCount(Map<String, Object> params);
 }

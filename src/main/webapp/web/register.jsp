@@ -101,6 +101,11 @@
             return pattern.test(phone);
         }
 
+        // 密码长度验证 (至少8位)
+        function isValidPassword(password) {
+            return password.length >= 8;
+        }
+
         // 注册按钮点击事件
         $('#register_btn').on('click', function(){
             var num = 0;
@@ -117,6 +122,16 @@
                     return false;
                 }
             });
+
+            // 检查密码长度
+            if(!isValidPassword($("#password").val())) {
+                layer.alert("密码长度至少需要8位", {
+                    title: '提示框',
+                    icon: 0,
+                });
+                num++;
+                return false;
+            }
 
             // 检查密码一致性
             if($("#password").val() != $("#confirmPassword").val()) {
@@ -183,7 +198,6 @@
                 }
             });
         });
-
 
         // 输入框焦点事件
         $("input[type='text'],input[type='password']").blur(function(){
