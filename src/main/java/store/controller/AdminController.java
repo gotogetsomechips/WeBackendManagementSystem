@@ -145,12 +145,6 @@ public class AdminController {
                 return result;
             }
 
-            // 检查登录名是否已存在
-            if (adminService.checkUsernameExists(admin.getUsername())) {
-                result.put("success", false);
-                result.put("message", "该登录名已存在");
-                return result;
-            }
 
             // 检查编号是否已存在
             if (adminService.checkSortOrderExists(admin.getSortOrder())) {
@@ -241,12 +235,6 @@ public class AdminController {
                 return result;
             }
 
-            // 检查登录名是否已存在（排除自己）
-            if (!oldAdmin.getUsername().equals(admin.getUsername()) && adminService.checkUsernameExists(admin.getUsername())) {
-                result.put("success", false);
-                result.put("message", "该登录名已存在");
-                return result;
-            }
 
             // 检查编号是否已存在（排除自己）
             if (!oldAdmin.getSortOrder().equals(admin.getSortOrder()) && adminService.checkSortOrderExists(admin.getSortOrder())) {

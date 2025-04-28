@@ -713,6 +713,59 @@
             }
         });
     }
+    // 提交编辑表单
+    function submitEditForm(index) {
+        // 前端验证
+        var realName = $("#editAdminForm input[name='realName']").val();
+        var mobile = $("#editAdminForm input[name='mobile']").val();
+        var email = $("#editAdminForm input[name='email']").val();
+        var password = $("#editAdminForm input[name='password']").val();
+        var sortOrder = $("#editAdminForm input[name='sortOrder']").val();
+
+        if (!realName) {
+            layer.msg("真实姓名不能为空", {icon: 2, time: 2000});
+            return;
+        }
+        if (!mobile || !/^1[3-9]\d{9}$/.test(mobile)) {
+            layer.msg("请输入有效的手机号", {icon: 2, time: 2000});
+            return;
+        }
+        if (!email || !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+            layer.msg("请输入有效的邮箱", {icon: 2, time: 2000});
+            return;
+        }
+        if (password && password.length < 8) {
+            layer.msg("密码长度不能少于8位", {icon: 2, time: 2000});
+            return;
+        }
+        if (!sortOrder) {
+            layer.msg("编号不能为空", {icon: 2, time: 2000});
+            return;
+        }
+
+        // 获取角色名称
+        var roleId = $("#editRoleSelect").val();
+        var roleName = $("#editRoleSelect option:selected").text();
+
+        var formData = $("#editAdminForm").serialize() + "&roleName=" + encodeURIComponent(roleName);
+
+        $.ajax({
+            url: "updateAdmin",
+            type: "post",
+            data: formData,
+            dataType: "json",
+            success: function(response) {
+                if(response.success) {
+                    layer.msg(response.message, {icon: 1, time: 1000});
+                    layer.close(index);
+                    loadAdminList();
+                } else {
+                    layer.msg(response.message, {icon: 2, time: 2000});
+                }
+            }
+        });
+    }
+
     // 编辑管理员
     function editAdmin(id) {
         // 获取管理员信息
@@ -788,30 +841,8 @@
                                 return;
                             }
 
-                            // 登录名唯一性校验
-                            var username = $("#editAdminForm input[name='username']").val();
-                            var originalUsername = admin.username;
-
-                            if(username != originalUsername) {
-                                // 如果登录名已修改，需要检查唯一性
-                                $.ajax({
-                                    url: "admin/checkUsernameExists",
-                                    type: "get",
-                                    data: {username: username},
-                                    dataType: "json",
-                                    async: false,
-                                    success: function(response) {
-                                        if(response.exists) {
-                                            layer.msg("该登录名已存在", {icon: 2, time: 2000});
-                                            return;
-                                        } else {
-                                            submitEditForm(index);
-                                        }
-                                    }
-                                });
-                            } else {
-                                submitEditForm(index);
-                            }
+                            // 直接提交表单，不再检查用户名唯一性
+                            submitEditForm(index);
                         }
                     });
                 } else {
@@ -820,55 +851,26 @@
             }
         });
     }
-
-    // 提交编辑表单
-    function submitEditForm(index) {
-        // 前端验证
-        var realName = $("#editAdminForm input[name='realName']").val();
-        var mobile = $("#editAdminForm input[name='mobile']").val();
-        var email = $("#editAdminForm input[name='email']").val();
-        var password = $("#editAdminForm input[name='password']").val();
-
-        if (!realName) {
-            layer.msg("真实姓名不能为空", {icon: 2, time: 2000});
-            return;
-        }
-        if (!mobile || !/^1[3-9]\d{9}$/.test(mobile)) {
-            layer.msg("请输入有效的手机号", {icon: 2, time: 2000});
-            return;
-        }
-        if (!email || !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
-            layer.msg("请输入有效的邮箱", {icon: 2, time: 2000});
-            return;
-        }
-        if (password && password.length < 8) {
-            layer.msg("密码长度不能少于8位", {icon: 2, time: 2000});
-            return;
-        }
-
-        // 获取角色名称
-        var roleId = $("#editRoleSelect").val();
-        var roleName = $("#editRoleSelect option:selected").text();
-
-        var formData = $("#editAdminForm").serialize() + "&roleName=" + encodeURIComponent(roleName);
-
-        $.ajax({
-            url: "updateAdmin",
-            type: "post",
-            data: formData,
-            dataType: "json",
-            success: function(response) {
-                if(response.success) {
-                    layer.msg(response.message, {icon: 1, time: 1000});
-                    layer.close(index);
-                    loadAdminList();
-                } else {
-                    layer.msg(response.message, {icon: 2, time: 2000});
+    // 删除单个管理员
+    function deleteAdmin(id) {
+        layer.confirm('确认要删除该管理员吗？', {icon: 3, title:'提示'}, function(index){
+            $.ajax({
+                url: "deleteAdmin",
+                type: "post",
+                data: {id: id},
+                dataType: "json",
+                success: function(response) {
+                    if(response.success) {
+                        layer.msg(response.message, {icon: 1, time: 1000});
+                        loadAdminList();
+                    } else {
+                        layer.msg(response.message, {icon: 2, time: 2000});
+                    }
                 }
-            }
+            });
+            layer.close(index);
         });
     }
-
     // 批量删除
     function batchDelete() {
         var ids = [];
