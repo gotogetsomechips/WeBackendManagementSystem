@@ -21,7 +21,9 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (url.contains("/login") || url.contains("/register") || 
             url.contains("/captcha") || url.contains("/check_username") || 
             url.contains("/assets") || url.contains("/css") || 
-            url.contains("/js") || url.contains("/images")) {
+            url.contains("/js") || url.contains("/images") || url.contains("/Widgt")
+                || url.contains("/products")|| url.contains("/font")|| url.contains("/doLogin")
+                || url.contains("/doRegister")) {
             return true;
         }
         

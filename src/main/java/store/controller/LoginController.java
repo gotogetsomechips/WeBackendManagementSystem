@@ -275,9 +275,9 @@ public class LoginController {
     public String admin_Competence() {
         return "admin_Competence";
     }
-    @RequestMapping("/administrator")
+    @RequestMapping("/admin_list")
     public String administrator() {
-        return "administrator";
+        return "Admin_list";
     }
     @RequestMapping("/admin_info")
     public String admin_info() {

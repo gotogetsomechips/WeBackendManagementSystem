@@ -423,8 +423,8 @@
                     <li><a href="#" class="dropdown-toggle"><i class="icon-group"></i><span class="menu-text"> 管理员管理 </span><b class="arrow icon-angle-down"></b></a>
                         <ul class="submenu">
 
+                            <li class="home"><a href="javascript:void(0)" name="Admin_list" title="管理员列表" class="iframeurl"><i class="icon-double-angle-right"></i>管理员列表</a></li>
                             <li class="home"><a href="javascript:void(0)" name="admin_Competence" title="权限管理"  class="iframeurl"><i class="icon-double-angle-right"></i>权限管理</a></li>
-                            <li class="home"><a href="javascript:void(0)" name="administrator" title="管理员列表" class="iframeurl"><i class="icon-double-angle-right"></i>管理员列表</a></li>
                             <li class="home"><a href="javascript:void(0)" name="admin_info" title="个人信息" class="iframeurl"><i class="icon-double-angle-right"></i>个人信息</a></li>
                         </ul>
                     </li>

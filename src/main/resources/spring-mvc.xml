@@ -35,10 +35,10 @@
     <mvc:resources mapping="/products/**" location="/web/products/"/>
     <mvc:resources mapping="/Widget/**" location="/web/Widget/"/>
     <!-- 配置拦截器 -->
-<!--    <mvc:interceptors>-->
-<!--        <mvc:interceptor>-->
-<!--            <mvc:mapping path="/**"/>-->
-<!--            <bean class="store.interceptor.LoginInterceptor"/>-->
-<!--        </mvc:interceptor>-->
-<!--    </mvc:interceptors>-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="store.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
