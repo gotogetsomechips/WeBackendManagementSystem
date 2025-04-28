@@ -652,8 +652,45 @@
             content: $("#addAdminModal"),
             btn: ['提交', '取消'],
             yes: function(index) {
-                // 获取角色名称
+                // 前端验证
+                var username = $("#addAdminForm input[name='username']").val();
+                var password = $("#addAdminForm input[name='password']").val();
+                var realName = $("#addAdminForm input[name='realName']").val();
                 var roleId = $("#roleSelect").val();
+                var mobile = $("#addAdminForm input[name='mobile']").val();
+                var email = $("#addAdminForm input[name='email']").val();
+                var sortOrder = $("#addAdminForm input[name='sortOrder']").val();
+
+                if (!username) {
+                    layer.msg("登录名不能为空", {icon: 2, time: 2000});
+                    return;
+                }
+                if (!password || password.length < 8) {
+                    layer.msg("密码不能为空且长度不能少于8位", {icon: 2, time: 2000});
+                    return;
+                }
+                if (!realName) {
+                    layer.msg("真实姓名不能为空", {icon: 2, time: 2000});
+                    return;
+                }
+                if (!roleId) {
+                    layer.msg("请选择角色", {icon: 2, time: 2000});
+                    return;
+                }
+                if (!mobile || !/^1[3-9]\d{9}$/.test(mobile)) {
+                    layer.msg("请输入有效的手机号", {icon: 2, time: 2000});
+                    return;
+                }
+                if (!email || !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+                    layer.msg("请输入有效的邮箱", {icon: 2, time: 2000});
+                    return;
+                }
+                if (!sortOrder) {
+                    layer.msg("编号不能为空", {icon: 2, time: 2000});
+                    return;
+                }
+
+                // 获取角色名称
                 var roleName = $("#roleSelect option:selected").text();
 
                 var formData = $("#addAdminForm").serialize() + "&roleName=" + encodeURIComponent(roleName);
@@ -676,7 +713,6 @@
             }
         });
     }
-
     // 编辑管理员
     function editAdmin(id) {
         // 获取管理员信息
@@ -787,6 +823,29 @@
 
     // 提交编辑表单
     function submitEditForm(index) {
+        // 前端验证
+        var realName = $("#editAdminForm input[name='realName']").val();
+        var mobile = $("#editAdminForm input[name='mobile']").val();
+        var email = $("#editAdminForm input[name='email']").val();
+        var password = $("#editAdminForm input[name='password']").val();
+
+        if (!realName) {
+            layer.msg("真实姓名不能为空", {icon: 2, time: 2000});
+            return;
+        }
+        if (!mobile || !/^1[3-9]\d{9}$/.test(mobile)) {
+            layer.msg("请输入有效的手机号", {icon: 2, time: 2000});
+            return;
+        }
+        if (!email || !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+            layer.msg("请输入有效的邮箱", {icon: 2, time: 2000});
+            return;
+        }
+        if (password && password.length < 8) {
+            layer.msg("密码长度不能少于8位", {icon: 2, time: 2000});
+            return;
+        }
+
         // 获取角色名称
         var roleId = $("#editRoleSelect").val();
         var roleName = $("#editRoleSelect option:selected").text();
@@ -807,27 +866,6 @@
                     layer.msg(response.message, {icon: 2, time: 2000});
                 }
             }
-        });
-    }
-
-    // 删除管理员
-    function deleteAdmin(id) {
-        layer.confirm('确认要删除该管理员吗？', {icon: 3, title:'提示'}, function(index){
-            $.ajax({
-                url: "deleteAdmin",
-                type: "post",
-                data: {id: id},
-                dataType: "json",
-                success: function(response) {
-                    if(response.success) {
-                        layer.msg(response.message, {icon: 1, time: 1000});
-                        loadAdminList();
-                    } else {
-                        layer.msg(response.message, {icon: 2, time: 2000});
-                    }
-                }
-            });
-            layer.close(index);
         });
     }
 

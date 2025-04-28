@@ -101,6 +101,12 @@ public class AdminController {
                 result.put("message", "密码不能为空");
                 return result;
             }
+            // 密码长度验证
+            if (admin.getPassword().length() < 8) {
+                result.put("success", false);
+                result.put("message", "密码长度不能少于8位");
+                return result;
+            }
             if (admin.getRoleId() == null) {
                 result.put("success", false);
                 result.put("message", "请选择角色");
@@ -109,6 +115,33 @@ public class AdminController {
             if (admin.getSortOrder() == null) {
                 result.put("success", false);
                 result.put("message", "编号不能为空");
+                return result;
+            }
+            if (admin.getRealName() == null || admin.getRealName().trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "真实姓名不能为空");
+                return result;
+            }
+            if (admin.getMobile() == null || admin.getMobile().trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "手机号不能为空");
+                return result;
+            }
+            // 手机号格式验证
+            if (!admin.getMobile().matches("^1[3-9]\\d{9}$")) {
+                result.put("success", false);
+                result.put("message", "手机号格式不正确");
+                return result;
+            }
+            if (admin.getEmail() == null || admin.getEmail().trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "邮箱不能为空");
+                return result;
+            }
+            // 邮箱格式验证
+            if (!admin.getEmail().matches("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$")) {
+                result.put("success", false);
+                result.put("message", "邮箱格式不正确");
                 return result;
             }
 
@@ -179,6 +212,35 @@ public class AdminController {
                 return result;
             }
 
+            // 检查必填字段
+            if (admin.getRealName() == null || admin.getRealName().trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "真实姓名不能为空");
+                return result;
+            }
+            if (admin.getMobile() == null || admin.getMobile().trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "手机号不能为空");
+                return result;
+            }
+            // 手机号格式验证
+            if (!admin.getMobile().matches("^1[3-9]\\d{9}$")) {
+                result.put("success", false);
+                result.put("message", "手机号格式不正确");
+                return result;
+            }
+            if (admin.getEmail() == null || admin.getEmail().trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "邮箱不能为空");
+                return result;
+            }
+            // 邮箱格式验证
+            if (!admin.getEmail().matches("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$")) {
+                result.put("success", false);
+                result.put("message", "邮箱格式不正确");
+                return result;
+            }
+
             // 检查登录名是否已存在（排除自己）
             if (!oldAdmin.getUsername().equals(admin.getUsername()) && adminService.checkUsernameExists(admin.getUsername())) {
                 result.put("success", false);
@@ -193,6 +255,18 @@ public class AdminController {
                 return result;
             }
 
+            // 如果密码为空，则保留原密码
+            if (admin.getPassword() == null || admin.getPassword().trim().isEmpty()) {
+                admin.setPassword(oldAdmin.getPassword());
+            } else {
+                // 密码长度验证
+                if (admin.getPassword().length() < 8) {
+                    result.put("success", false);
+                    result.put("message", "密码长度不能少于8位");
+                    return result;
+                }
+            }
+
             adminService.updateAdmin(admin);
 
             result.put("success", true);
@@ -204,7 +278,6 @@ public class AdminController {
 
         return result;
     }
-
     /**
      * 删除管理员
      */
