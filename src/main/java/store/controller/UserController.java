@@ -62,8 +62,22 @@ public class UserController {
             if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
                 throw new RuntimeException("密码不能为空");
             }
+            if (user.getPassword().length() < 8) {
+                throw new RuntimeException("密码长度不能少于8位");
+            }
             if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
                 throw new RuntimeException("邮箱不能为空");
+            }
+            if (!user.getEmail().matches("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$")) {
+                throw new RuntimeException("邮箱格式不正确");
+            }
+            if (user.getPhone() != null && !user.getPhone().isEmpty() && !user.getPhone().matches("^1[3-9]\\d{9}$")) {
+                throw new RuntimeException("手机号格式不正确");
+            }
+
+            // 检查用户名是否已存在
+            if (userService.checkUsernameExists(user.getUsername(), null)) {
+                throw new RuntimeException("用户名已存在");
             }
 
             userService.addUser(user);
@@ -75,6 +89,7 @@ public class UserController {
         }
         return result;
     }
+
     @GetMapping("/get")
     @ResponseBody
     public Map<String, Object> getUser(@RequestParam Integer id) {
@@ -94,11 +109,36 @@ public class UserController {
         }
         return result;
     }
+
     @PostMapping("/update")
     @ResponseBody
     public Map<String, Object> updateUser(User user) {
         Map<String, Object> result = new HashMap<>();
         try {
+            // 验证必填字段
+            if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+                throw new RuntimeException("用户名不能为空");
+            }
+            if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+                throw new RuntimeException("邮箱不能为空");
+            }
+            if (!user.getEmail().matches("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$")) {
+                throw new RuntimeException("邮箱格式不正确");
+            }
+            if (user.getPhone() != null && !user.getPhone().isEmpty() && !user.getPhone().matches("^1[3-9]\\d{9}$")) {
+                throw new RuntimeException("手机号格式不正确");
+            }
+
+            // 检查用户名是否已存在（排除当前用户）
+            if (userService.checkUsernameExists(user.getUsername(), user.getId())) {
+                throw new RuntimeException("用户名已存在");
+            }
+
+            // 如果密码不为空且长度小于8位
+            if (user.getPassword() != null && !user.getPassword().isEmpty() && user.getPassword().length() < 8) {
+                throw new RuntimeException("密码长度不能少于8位");
+            }
+
             userService.updateUser(user);
             result.put("success", true);
             result.put("message", "更新用户成功");

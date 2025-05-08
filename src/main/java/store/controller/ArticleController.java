@@ -24,6 +24,55 @@ public class ArticleController {
 
     @Autowired
     private ArticleService articleService;
+    /**
+     * 检查文章标题是否存在
+     */
+    @RequestMapping("/article/checkTitleExists")
+    @ResponseBody
+    public Map<String, Object> checkTitleExists(
+            @RequestParam String title,
+            @RequestParam(required = false) Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        boolean exists;
+
+        if (id != null) {
+            // 编辑时检查，排除当前记录
+            Article article = articleService.findById(id);
+            exists = articleService.checkTitleExists(title) &&
+                    !article.getTitle().equals(title);
+        } else {
+            // 添加时检查
+            exists = articleService.checkTitleExists(title);
+        }
+
+        result.put("exists", exists);
+        return result;
+    }
+
+    /**
+     * 检查文章编号是否存在
+     */
+    @RequestMapping("/article/checkSortOrderExists")
+    @ResponseBody
+    public Map<String, Object> checkSortOrderExists(
+            @RequestParam Integer sortOrder,
+            @RequestParam(required = false) Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        boolean exists;
+
+        if (id != null) {
+            // 编辑时检查，排除当前记录
+            Article article = articleService.findById(id);
+            exists = articleService.checkSortOrderExists(sortOrder) &&
+                    !article.getSortOrder().equals(sortOrder);
+        } else {
+            // 添加时检查
+            exists = articleService.checkSortOrderExists(sortOrder);
+        }
+
+        result.put("exists", exists);
+        return result;
+    }
 
     @RequestMapping("/Article_list")
     public String articleList(Model model) {

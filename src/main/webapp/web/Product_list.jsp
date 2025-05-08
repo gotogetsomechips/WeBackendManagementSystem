@@ -124,14 +124,14 @@
         </div>
     </div>
 </div>
-
 <!-- 添加产品表单 -->
 <div id="addProductModal" style="display:none;padding:20px;">
     <form id="addProductForm" class="form-horizontal">
         <div class="form-group">
             <label class="col-sm-3 control-label">产品名称：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="name" required onblur="checkProductName(this)">
+                <span id="nameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -143,18 +143,21 @@
                         <option value="${category.id}">${category.name}</option>
                     </c:forEach>
                 </select>
+                <span id="categoryTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">原价格：</label>
             <div class="col-sm-9">
-                <input type="number" step="0.01" class="form-control" name="originalPrice" required>
+                <input type="number" step="0.01" class="form-control" name="originalPrice" required onblur="checkOriginalPrice(this)">
+                <span id="originalPriceTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">现价：</label>
             <div class="col-sm-9">
-                <input type="number" step="0.01" class="form-control" name="currentPrice" required>
+                <input type="number" step="0.01" class="form-control" name="currentPrice" required onblur="checkCurrentPrice(this)">
+                <span id="currentPriceTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -171,7 +174,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" required>
+                <input type="number" class="form-control" name="sortOrder" required onblur="checkSortOrder(this)">
+                <span id="sortOrderTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -182,6 +186,7 @@
         </div>
     </form>
 </div>
+
 <!-- 详情模态框 -->
 <div id="detailProductModal" style="display:none;padding:20px;">
     <div class="form-horizontal">
@@ -254,7 +259,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">产品名称：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="name" required onblur="checkEditProductName(this)">
+                <span id="editNameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -266,18 +272,21 @@
                         <option value="${category.id}">${category.name}</option>
                     </c:forEach>
                 </select>
+                <span id="editCategoryTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">原价格：</label>
             <div class="col-sm-9">
-                <input type="number" step="0.01" class="form-control" name="originalPrice" required>
+                <input type="number" step="0.01" class="form-control" name="originalPrice" required onblur="checkEditOriginalPrice(this)">
+                <span id="editOriginalPriceTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">现价：</label>
             <div class="col-sm-9">
-                <input type="number" step="0.01" class="form-control" name="currentPrice" required>
+                <input type="number" step="0.01" class="form-control" name="currentPrice" required onblur="checkEditCurrentPrice(this)">
+                <span id="editCurrentPriceTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -294,7 +303,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" required>
+                <input type="number" class="form-control" name="sortOrder" required onblur="checkEditSortOrder(this)">
+                <span id="editSortOrderTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -518,6 +528,209 @@
             }
         });
     }
+    // 校验函数
+    function checkProductName(input) {
+        var name = $(input).val();
+        var tip = $("#nameTip");
+
+        if (!name) {
+            showTip(tip, "产品名称不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "checkProductName",
+            type: "get",
+            data: {name: name},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "产品名称可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkCategory(input) {
+        var categoryId = $(input).val();
+        var tip = $("#categoryTip");
+
+        if (!categoryId) {
+            showTip(tip, "请选择产品分类", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkOriginalPrice(input) {
+        var price = $(input).val();
+        var tip = $("#originalPriceTip");
+
+        if (!price) {
+            showTip(tip, "原价格不能为空", "error");
+            return false;
+        }
+
+        if (parseFloat(price) <= 0) {
+            showTip(tip, "原价格必须大于0", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkCurrentPrice(input) {
+        var price = $(input).val();
+        var tip = $("#currentPriceTip");
+
+        if (!price) {
+            showTip(tip, "现价不能为空", "error");
+            return false;
+        }
+
+        if (parseFloat(price) <= 0) {
+            showTip(tip, "现价必须大于0", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#sortOrderTip");
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "product/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    // 编辑表单的校验函数
+    function checkEditProductName(input) {
+        var name = $(input).val();
+        var tip = $("#editNameTip");
+        var id = $("#editProductForm input[name='id']").val();
+
+        if (!name) {
+            showTip(tip, "产品名称不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "checkProductName",
+            type: "get",
+            data: {name: name, id: id},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "产品名称可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkEditOriginalPrice(input) {
+        var price = $(input).val();
+        var tip = $("#editOriginalPriceTip");
+
+        if (!price) {
+            showTip(tip, "原价格不能为空", "error");
+            return false;
+        }
+
+        if (parseFloat(price) <= 0) {
+            showTip(tip, "原价格必须大于0", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkEditCurrentPrice(input) {
+        var price = $(input).val();
+        var tip = $("#editCurrentPriceTip");
+
+        if (!price) {
+            showTip(tip, "现价不能为空", "error");
+            return false;
+        }
+
+        if (parseFloat(price) <= 0) {
+            showTip(tip, "现价必须大于0", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkEditSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#editSortOrderTip");
+        var id = $("#editProductForm input[name='id']").val();
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "product/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder, id: id},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function showTip(element, message, type) {
+        element.text(message);
+        if (type === "success") {
+            element.css({
+                "color": "#28a745",  // 绿色
+                "font-weight": "bold"
+            });
+        } else if (type === "error") {
+            element.css({
+                "color": "#dc3545",  // 红色
+                "font-weight": "bold"
+            });
+        } else {
+            element.css({
+                "color": "",  // 恢复默认颜色
+                "font-weight": ""
+            });
+        }
+    }
+
     // 根据字段排序
     function sortBy(field) {
         // 更新全局排序状态
@@ -784,16 +997,30 @@
 
     // 显示添加产品模态框
     function showAddProductModal() {
-        // 重置表单
+        // 重置表单和提示信息
         $("#addProductForm")[0].reset();
+        $(".help-block").text("").removeClass("text-success text-danger");
 
         layer.open({
             type: 1,
             title: '添加产品',
-            area: ['550px', '500px'],
+            area: ['550px', '600px'], // 增加高度以适应校验提示
             content: $("#addProductModal"),
             btn: ['提交', '取消'],
             yes: function(index) {
+                // 执行所有校验
+                var isValid = true;
+                isValid = checkProductName($("#addProductForm input[name='name']")) && isValid;
+                isValid = checkCategory($("#categorySelect")) && isValid;
+                isValid = checkOriginalPrice($("#addProductForm input[name='originalPrice']")) && isValid;
+                isValid = checkCurrentPrice($("#addProductForm input[name='currentPrice']")) && isValid;
+                isValid = checkSortOrder($("#addProductForm input[name='sortOrder']")) && isValid;
+
+                if (!isValid) {
+                    layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
+                    return;
+                }
+
                 // 获取分类名称
                 var categoryId = $("#categorySelect").val();
                 var categoryName = $("#categorySelect option:selected").text();
@@ -922,6 +1149,18 @@
     }
     // 提交编辑表单
     function submitEditForm(index) {
+        // 执行所有校验
+        var isValid = true;
+        isValid = checkEditProductName($("#editProductForm input[name='name']")) && isValid;
+        isValid = checkEditOriginalPrice($("#editProductForm input[name='originalPrice']")) && isValid;
+        isValid = checkEditCurrentPrice($("#editProductForm input[name='currentPrice']")) && isValid;
+        isValid = checkEditSortOrder($("#editProductForm input[name='sortOrder']")) && isValid;
+
+        if (!isValid) {
+            layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
+            return;
+        }
+
         // 获取分类名称
         var categoryId = $("#editCategorySelect").val();
         var categoryName = $("#editCategorySelect option:selected").text();

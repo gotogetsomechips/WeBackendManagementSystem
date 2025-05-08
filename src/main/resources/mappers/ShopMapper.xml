@@ -17,7 +17,7 @@
 
     <!-- 获取所有商铺 -->
     <select id="getAllShops" resultMap="shopResultMap">
-        SELECT * FROM t_shop ORDER BY sort_order ASC, id DESC
+        SELECT * FROM t_shop ORDER BY sort_order ASC, create_time DESC
     </select>
 
     <!-- 根据条件查询商铺 -->
@@ -47,7 +47,7 @@
         <if test="sortField != null and sortField != ''">
             ${sortField} ${sortOrder},
         </if>
-        sort_order ASC, id DESC
+        sort_order ASC, create_time DESC
         <if test="start != null and limit != null">
             LIMIT #{start}, #{limit}
         </if>

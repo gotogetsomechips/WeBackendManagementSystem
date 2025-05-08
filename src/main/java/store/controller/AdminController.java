@@ -168,24 +168,52 @@ public class AdminController {
     }
 
     /**
-     * 检查登录名是否存在
-     */
-    @RequestMapping("/admin/checkUsernameExists")
-    @ResponseBody
-    public Map<String, Object> checkUsernameExists(String username) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("exists", adminService.checkUsernameExists(username));
-        return result;
-    }
-
-    /**
      * 检查编号是否存在
      */
     @RequestMapping("/admin/checkSortOrderExists")
     @ResponseBody
-    public Map<String, Object> checkSortOrderExists(Integer sortOrder) {
+    public Map<String, Object> checkSortOrderExists(
+            @RequestParam Integer sortOrder,
+            @RequestParam(required = false) Integer id) {
         Map<String, Object> result = new HashMap<>();
-        result.put("exists", adminService.checkSortOrderExists(sortOrder));
+        boolean exists;
+
+        if (id != null) {
+            // 编辑时检查，排除当前记录
+            Admin admin = adminService.findById(id);
+            exists = adminService.checkSortOrderExists(sortOrder) &&
+                    !admin.getSortOrder().equals(sortOrder);
+        } else {
+            // 添加时检查
+            exists = adminService.checkSortOrderExists(sortOrder);
+        }
+
+        result.put("exists", exists);
+        return result;
+    }
+
+    /**
+     * 检查登录名是否存在
+     */
+    @RequestMapping("/admin/checkUsernameExists")
+    @ResponseBody
+    public Map<String, Object> checkUsernameExists(
+            @RequestParam String username,
+            @RequestParam(required = false) Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        boolean exists;
+
+        if (id != null) {
+            // 编辑时检查，排除当前记录
+            Admin admin = adminService.findById(id);
+            exists = adminService.checkUsernameExists(username) &&
+                    !admin.getUsername().equals(username);
+        } else {
+            // 添加时检查
+            exists = adminService.checkUsernameExists(username);
+        }
+
+        result.put("exists", exists);
         return result;
     }
 

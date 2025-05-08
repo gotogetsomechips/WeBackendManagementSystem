@@ -116,19 +116,22 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">登录名：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="username" required>
+                <input type="text" class="form-control" name="username" required onblur="checkUsername(this)">
+                <span id="usernameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">密码：</label>
             <div class="col-sm-9">
-                <input type="password" class="form-control" name="password" required>
+                <input type="password" class="form-control" name="password" required onblur="checkPassword(this)">
+                <span id="passwordTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">真实姓名：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="realName">
+                <input type="text" class="form-control" name="realName" onblur="checkRealName(this)">
+                <span id="realNameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -145,19 +148,22 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">手机：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="mobile">
+                <input type="text" class="form-control" name="mobile" onblur="checkMobile(this)">
+                <span id="mobileTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">邮箱：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="email">
+                <input type="text" class="form-control" name="email" onblur="checkEmail(this)">
+                <span id="emailTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" value="0" required>
+                <input type="number" class="form-control" name="sortOrder" value="0" required onblur="checkSortOrder(this)">
+                <span id="sortOrderTip" class="help-block"></span>
             </div>
         </div>
     </form>
@@ -230,19 +236,22 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">登录名：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="username" required>
+                <input type="text" class="form-control" name="username" required onblur="checkEditUsername(this)">
+                <span id="editUsernameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">密码：</label>
             <div class="col-sm-9">
-                <input type="password" class="form-control" name="password" placeholder="留空表示不修改">
+                <input type="password" class="form-control" name="password" placeholder="留空表示不修改" onblur="checkEditPassword(this)">
+                <span id="editPasswordTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">真实姓名：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="realName">
+                <input type="text" class="form-control" name="realName" onblur="checkEditRealName(this)">
+                <span id="editRealNameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -259,19 +268,22 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">手机：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="mobile">
+                <input type="text" class="form-control" name="mobile" onblur="checkEditMobile(this)">
+                <span id="editMobileTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">邮箱：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="email">
+                <input type="text" class="form-control" name="email" onblur="checkEditEmail(this)">
+                <span id="editEmailTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" required>
+                <input type="number" class="form-control" name="sortOrder" required onblur="checkEditSortOrder(this)">
+                <span id="editSortOrderTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -639,54 +651,271 @@
         $("select[name='roleId']").val(roleId);
         searchAdmins();
     }
+    function checkUsername(input) {
+        var username = $(input).val();
+        var tip = $("#usernameTip");
 
+        if (!username) {
+            showTip(tip, "登录名不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "admin/checkUsernameExists",
+            type: "get",
+            data: {username: username},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "登录名可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+    function checkPassword(input) {
+        var password = $(input).val();
+        var tip = $("#passwordTip");
+
+        if (!password) {
+            showTip(tip, "密码不能为空", "error");
+            return false;
+        }
+
+        if (password.length < 8) {
+            showTip(tip, "密码长度不能少于8位", "error");
+            return false;
+        }
+
+        showTip(tip, "密码符合要求", "success");
+        return true;
+    }
+
+    function checkRealName(input) {
+        var realName = $(input).val();
+        var tip = $("#realNameTip");
+
+        if (!realName) {
+            showTip(tip, "真实姓名不能为空", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkMobile(input) {
+        var mobile = $(input).val();
+        var tip = $("#mobileTip");
+
+        if (!mobile) {
+            showTip(tip, "手机号不能为空", "error");
+            return false;
+        }
+
+        if (!/^1[3-9]\d{9}$/.test(mobile)) {
+            showTip(tip, "请输入有效的手机号", "error");
+            return false;
+        }
+
+        showTip(tip, "手机号格式正确", "success");
+        return true;
+    }
+
+    function checkEmail(input) {
+        var email = $(input).val();
+        var tip = $("#emailTip");
+
+        if (!email) {
+            showTip(tip, "邮箱不能为空", "error");
+            return false;
+        }
+
+        if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+            showTip(tip, "请输入有效的邮箱", "error");
+            return false;
+        }
+
+        showTip(tip, "邮箱格式正确", "success");
+        return true;
+    }
+
+    function checkSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#sortOrderTip");
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "admin/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    // 编辑表单的校验函数
+    function checkEditPassword(input) {
+        var password = $(input).val();
+        var tip = $("#editPasswordTip");
+
+        if (password && password.length < 8) {
+            showTip(tip, "密码长度不能少于8位", "error");
+            return false;
+        }
+
+        showTip(tip, password ? "密码符合要求" : "留空则不修改密码", "success");
+        return true;
+    }
+
+    function checkEditRealName(input) {
+        var realName = $(input).val();
+        var tip = $("#editRealNameTip");
+
+        if (!realName) {
+            showTip(tip, "真实姓名不能为空", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkEditMobile(input) {
+        var mobile = $(input).val();
+        var tip = $("#editMobileTip");
+
+        if (!mobile) {
+            showTip(tip, "手机号不能为空", "error");
+            return false;
+        }
+
+        if (!/^1[3-9]\d{9}$/.test(mobile)) {
+            showTip(tip, "请输入有效的手机号", "error");
+            return false;
+        }
+
+        showTip(tip, "手机号格式正确", "success");
+        return true;
+    }
+
+    function checkEditEmail(input) {
+        var email = $(input).val();
+        var tip = $("#editEmailTip");
+
+        if (!email) {
+            showTip(tip, "邮箱不能为空", "error");
+            return false;
+        }
+
+        if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+            showTip(tip, "请输入有效的邮箱", "error");
+            return false;
+        }
+
+        showTip(tip, "邮箱格式正确", "success");
+        return true;
+    }
+
+    function checkEditSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#editSortOrderTip");
+        var id = $("#editAdminForm input[name='id']").val();
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "admin/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder, id: id},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+    function checkEditUsername(input) {
+        var username = $(input).val();
+        var tip = $("#editUsernameTip");
+        var id = $("#editAdminForm input[name='id']").val();
+
+        if (!username) {
+            showTip(tip, "登录名不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "admin/checkUsernameExists",
+            type: "get",
+            data: {username: username, id: id},
+            dataType: "json",
+            success: function(response) {
+                   showTip(tip, "登录名可用", "success");
+            }
+        });
+        return true;
+    }
+    function showTip(element, message, type) {
+        element.text(message);
+        if (type === "success") {
+            element.css({
+                "color": "#28a745",  // 绿色
+                "font-weight": "bold"
+            });
+        } else if (type === "error") {
+            element.css({
+                "color": "#dc3545",  // 红色
+                "font-weight": "bold"
+            });
+        } else {
+            element.css({
+                "color": "",  // 恢复默认颜色
+                "font-weight": ""
+            });
+        }
+    }
     // 显示添加管理员模态框
     function showAddAdminModal() {
-        // 重置表单
+        // 重置表单和提示信息
         $("#addAdminForm")[0].reset();
+        $(".help-block").text("").removeClass("text-success text-danger");
 
         layer.open({
             type: 1,
             title: '添加管理员',
-            area: ['550px', '500px'],
+            area: ['550px', '600px'], // 增加高度以适应校验提示
             content: $("#addAdminModal"),
             btn: ['提交', '取消'],
             yes: function(index) {
-                // 前端验证
-                var username = $("#addAdminForm input[name='username']").val();
-                var password = $("#addAdminForm input[name='password']").val();
-                var realName = $("#addAdminForm input[name='realName']").val();
-                var roleId = $("#roleSelect").val();
-                var mobile = $("#addAdminForm input[name='mobile']").val();
-                var email = $("#addAdminForm input[name='email']").val();
-                var sortOrder = $("#addAdminForm input[name='sortOrder']").val();
+                // 执行所有校验
+                var isValid = true;
+                isValid = checkUsername($("#addAdminForm input[name='username']")) && isValid;
+                isValid = checkPassword($("#addAdminForm input[name='password']")) && isValid;
+                isValid = checkRealName($("#addAdminForm input[name='realName']")) && isValid;
+                isValid = checkMobile($("#addAdminForm input[name='mobile']")) && isValid;
+                isValid = checkEmail($("#addAdminForm input[name='email']")) && isValid;
+                isValid = checkSortOrder($("#addAdminForm input[name='sortOrder']")) && isValid;
 
-                if (!username) {
-                    layer.msg("登录名不能为空", {icon: 2, time: 2000});
-                    return;
-                }
-                if (!password || password.length < 8) {
-                    layer.msg("密码不能为空且长度不能少于8位", {icon: 2, time: 2000});
-                    return;
-                }
-                if (!realName) {
-                    layer.msg("真实姓名不能为空", {icon: 2, time: 2000});
-                    return;
-                }
-                if (!roleId) {
-                    layer.msg("请选择角色", {icon: 2, time: 2000});
-                    return;
-                }
-                if (!mobile || !/^1[3-9]\d{9}$/.test(mobile)) {
-                    layer.msg("请输入有效的手机号", {icon: 2, time: 2000});
-                    return;
-                }
-                if (!email || !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
-                    layer.msg("请输入有效的邮箱", {icon: 2, time: 2000});
-                    return;
-                }
-                if (!sortOrder) {
-                    layer.msg("编号不能为空", {icon: 2, time: 2000});
+                if (!isValid) {
+                    layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
                     return;
                 }
 
@@ -713,33 +942,20 @@
             }
         });
     }
+
     // 提交编辑表单
     function submitEditForm(index) {
-        // 前端验证
-        var realName = $("#editAdminForm input[name='realName']").val();
-        var mobile = $("#editAdminForm input[name='mobile']").val();
-        var email = $("#editAdminForm input[name='email']").val();
-        var password = $("#editAdminForm input[name='password']").val();
-        var sortOrder = $("#editAdminForm input[name='sortOrder']").val();
+        // 执行所有校验
+        var isValid = true;
+        isValid = checkEditUsername($("#editAdminForm input[name='username']")) && isValid;
+        isValid = checkEditPassword($("#editAdminForm input[name='password']")) && isValid;
+        isValid = checkEditRealName($("#editAdminForm input[name='realName']")) && isValid;
+        isValid = checkEditMobile($("#editAdminForm input[name='mobile']")) && isValid;
+        isValid = checkEditEmail($("#editAdminForm input[name='email']")) && isValid;
+        isValid = checkEditSortOrder($("#editAdminForm input[name='sortOrder']")) && isValid;
 
-        if (!realName) {
-            layer.msg("真实姓名不能为空", {icon: 2, time: 2000});
-            return;
-        }
-        if (!mobile || !/^1[3-9]\d{9}$/.test(mobile)) {
-            layer.msg("请输入有效的手机号", {icon: 2, time: 2000});
-            return;
-        }
-        if (!email || !/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
-            layer.msg("请输入有效的邮箱", {icon: 2, time: 2000});
-            return;
-        }
-        if (password && password.length < 8) {
-            layer.msg("密码长度不能少于8位", {icon: 2, time: 2000});
-            return;
-        }
-        if (!sortOrder) {
-            layer.msg("编号不能为空", {icon: 2, time: 2000});
+        if (!isValid) {
+            layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
             return;
         }
 

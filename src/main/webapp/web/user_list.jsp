@@ -2,53 +2,53 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-        <link rel="stylesheet" href="css/style.css"/>
-        <link href="assets/css/codemirror.css" rel="stylesheet">
-        <link rel="stylesheet" href="assets/css/ace.min.css" />
-        <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
-		<!--[if IE 7]>
-		  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
-		<![endif]-->
-        <!--[if lte IE 8]>
-		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
-		<![endif]-->
-			<script src="assets/js/jquery.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css"/>
+    <link href="assets/css/codemirror.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/ace.min.css" />
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css" />
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+    <![endif]-->
+    <script src="assets/js/jquery.min.js"></script>
 
-		<!-- <![endif]-->
+    <!-- <![endif]-->
 
-		<!--[if IE]>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<![endif]-->
+    <!--[if IE]>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <![endif]-->
 
-		<!--[if !IE]> -->
+    <!--[if !IE]> -->
 
-		<script type="text/javascript">
-			window.jQuery || document.write("<script src='assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
-		</script>
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='assets/js/jquery-2.0.3.min.js'>"+"<"+"/script>");
+    </script>
 
-		<!-- <![endif]-->
+    <!-- <![endif]-->
 
-		<!--[if IE]>
-<script type="text/javascript">
- window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
-</script>
-<![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
 
-		<script type="text/javascript">
-			if("ontouchend" in document) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
-		</script>
-		<script src="assets/js/bootstrap.min.js"></script>
-		<script src="assets/js/typeahead-bs2.min.js"></script>
-		<!-- page specific plugin scripts -->
-		<script src="assets/js/jquery.dataTables.min.js"></script>
-		<script src="assets/js/jquery.dataTables.bootstrap.js"></script>
-        <script type="text/javascript" src="js/H-ui.js"></script>
-        <script type="text/javascript" src="js/H-ui.admin.js"></script>
-        <script src="assets/layer/layer.js" type="text/javascript" ></script>
-        <script src="assets/laydate/laydate.js" type="text/javascript"></script>
-<title>用户列表</title>
+    <script type="text/javascript">
+        if("ontouchend" in document) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+    </script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/typeahead-bs2.min.js"></script>
+    <!-- page specific plugin scripts -->
+    <script src="assets/js/jquery.dataTables.min.js"></script>
+    <script src="assets/js/jquery.dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="js/H-ui.js"></script>
+    <script type="text/javascript" src="js/H-ui.admin.js"></script>
+    <script src="assets/layer/layer.js" type="text/javascript" ></script>
+    <script src="assets/laydate/laydate.js" type="text/javascript"></script>
+    <title>用户列表</title>
 </head>
 
 <body>
@@ -163,25 +163,100 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">用户名：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="username" required>
+                <input type="text" class="form-control" name="username" required onblur="checkUsername(this)">
+                <span id="usernameTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">密码：</label>
             <div class="col-sm-9">
-                <input type="password" class="form-control" name="password" required>
+                <input type="password" class="form-control" name="password" required onblur="checkPassword(this)">
+                <span id="passwordTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">邮箱：</label>
             <div class="col-sm-9">
-                <input type="email" class="form-control" name="email" required>
+                <input type="email" class="form-control" name="email" required onblur="checkEmail(this)">
+                <span id="emailTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">手机：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="phone">
+                <input type="text" class="form-control" name="phone" onblur="checkPhone(this)">
+                <span id="phoneTip" class="help-block"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">性别：</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="gender">
+                    <option value="0">未知</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">地址：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" name="address">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户等级：</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="userLevel">
+                    <option value="普通用户">普通用户</option>
+                    <option value="银牌用户">银牌用户</option>
+                    <option value="金牌用户">金牌用户</option>
+                    <option value="管理员">管理员</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">状态：</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="status">
+                    <option value="0">正常</option>
+                    <option value="1">锁定</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 编辑用户表单 -->
+<div id="editUserModal" style="display:none;padding:20px;">
+    <form id="editUserForm" class="form-horizontal">
+        <input type="hidden" name="id">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户名：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" name="username" required onblur="checkEditUsername(this)">
+                <span id="editUsernameTip" class="help-block"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">密码：</label>
+            <div class="col-sm-9">
+                <input type="password" class="form-control" name="password" placeholder="留空表示不修改" onblur="checkEditPassword(this)">
+                <span id="editPasswordTip" class="help-block"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">邮箱：</label>
+            <div class="col-sm-9">
+                <input type="email" class="form-control" name="email" required onblur="checkEditEmail(this)">
+                <span id="editEmailTip" class="help-block"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">手机：</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" name="phone" onblur="checkEditPhone(this)">
+                <span id="editPhoneTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -252,6 +327,171 @@
             $("input[name='userIds']").prop("checked", this.checked);
         });
     });
+
+    // 校验函数
+    function checkUsername(input) {
+        var username = $(input).val();
+        var tip = $("#usernameTip");
+
+        if (!username) {
+            showTip(tip, "用户名不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "user/checkUsername",
+            type: "get",
+            data: {username: username},
+            dataType: "json",
+            success: function(response) {
+                if(response.exists) {
+                    showTip(tip, "用户名已存在", "error");
+                } else {
+                    showTip(tip, "用户名可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkEditUsername(input) {
+        var username = $(input).val();
+        var tip = $("#editUsernameTip");
+        var id = $("#editUserForm input[name='id']").val();
+
+        if (!username) {
+            showTip(tip, "用户名不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "user/checkUsername",
+            type: "get",
+            data: {username: username, excludeId: id},
+            dataType: "json",
+            success: function(response) {
+                if(response.exists) {
+                    showTip(tip, "用户名已存在", "error");
+                } else {
+                    showTip(tip, "用户名可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkPassword(input) {
+        var password = $(input).val();
+        var tip = $("#passwordTip");
+
+        if (!password) {
+            showTip(tip, "密码不能为空", "error");
+            return false;
+        }
+
+        if (password.length < 8) {
+            showTip(tip, "密码长度不能少于8位", "error");
+            return false;
+        }
+
+        showTip(tip, "密码符合要求", "success");
+        return true;
+    }
+
+    function checkEditPassword(input) {
+        var password = $(input).val();
+        var tip = $("#editPasswordTip");
+
+        if (password && password.length < 8) {
+            showTip(tip, "密码长度不能少于8位", "error");
+            return false;
+        }
+
+        showTip(tip, password ? "密码符合要求" : "留空则不修改密码", "success");
+        return true;
+    }
+
+    function checkEmail(input) {
+        var email = $(input).val();
+        var tip = $("#emailTip");
+
+        if (!email) {
+            showTip(tip, "邮箱不能为空", "error");
+            return false;
+        }
+
+        if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+            showTip(tip, "请输入有效的邮箱", "error");
+            return false;
+        }
+
+        showTip(tip, "邮箱格式正确", "success");
+        return true;
+    }
+
+    function checkEditEmail(input) {
+        var email = $(input).val();
+        var tip = $("#editEmailTip");
+
+        if (!email) {
+            showTip(tip, "邮箱不能为空", "error");
+            return false;
+        }
+
+        if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+            showTip(tip, "请输入有效的邮箱", "error");
+            return false;
+        }
+
+        showTip(tip, "邮箱格式正确", "success");
+        return true;
+    }
+
+    function checkPhone(input) {
+        var phone = $(input).val();
+        var tip = $("#phoneTip");
+
+        if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
+            showTip(tip, "请输入有效的手机号", "error");
+            return false;
+        }
+
+        showTip(tip, phone ? "手机号格式正确" : "", "success");
+        return true;
+    }
+
+    function checkEditPhone(input) {
+        var phone = $(input).val();
+        var tip = $("#editPhoneTip");
+
+        if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
+            showTip(tip, "请输入有效的手机号", "error");
+            return false;
+        }
+
+        showTip(tip, phone ? "手机号格式正确" : "", "success");
+        return true;
+    }
+
+    function showTip(element, message, type) {
+        element.text(message);
+        if (type === "success") {
+            element.css({
+                "color": "#28a745",  // 绿色
+                "font-weight": "bold"
+            });
+        } else if (type === "error") {
+            element.css({
+                "color": "#dc3545",  // 红色
+                "font-weight": "bold"
+            });
+        } else {
+            element.css({
+                "color": "",  // 恢复默认颜色
+                "font-weight": ""
+            });
+        }
+    }
 
     function loadUserList() {
         var params = {
@@ -551,44 +791,35 @@
 
     // 显示添加用户模态框
     $('#member_add').on('click', function(){
-        // 重置表单
+        // 重置表单和提示信息
         $("#addUserForm")[0].reset();
-        $("#addUserForm input[name='id']").remove(); // 移除可能存在的隐藏id字段
+        $(".help-block").text("").removeClass("text-success text-danger");
 
         layer.open({
             type: 1,
             title: '添加用户',
-            area: ['550px', '500px'],
+            area: ['550px', '600px'], // 增加高度以适应校验提示
             content: $("#addUserModal"),
             btn: ['提交', '取消'],
             yes: function(index) {
-                // 表单验证
-                if(!validateForm()) {
+                // 执行所有校验
+                var isValid = true;
+                isValid = checkUsername($("#addUserForm input[name='username']")) && isValid;
+                isValid = checkPassword($("#addUserForm input[name='password']")) && isValid;
+                isValid = checkEmail($("#addUserForm input[name='email']")) && isValid;
+                isValid = checkPhone($("#addUserForm input[name='phone']")) && isValid;
+
+                if (!isValid) {
+                    layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
                     return;
                 }
 
-                // 检查用户名是否已存在
-                var username = $("#addUserForm input[name='username']").val();
-                $.ajax({
-                    url: "user/checkUsername",
-                    type: "get",
-                    data: {username: username},
-                    dataType: "json",
-                    success: function(response) {
-                        if(response.exists) {
-                            layer.msg("用户名已存在，请使用其他用户名", {icon: 2, time: 2000});
-                            return;
-                        } else {
-                            submitAddForm(index);
-                        }
-                    }
-                });
+                submitAddForm(index);
             }
         });
     });
 
     function editUser(id) {
-        // 获取用户信息
         $.ajax({
             url: "user/get",
             type: "get",
@@ -598,122 +829,84 @@
                 if(response.success) {
                     var user = response.data;
 
+                    // 保存原始数据
+                    var originalData = {
+                        username: user.username,
+                        password: user.password,
+                        email: user.email,
+                        phone: user.phone,
+                        gender: user.gender,
+                        address: user.address,
+                        userLevel: user.userLevel,
+                        status: user.status
+                    };
+
                     // 填充表单
-                    $("#addUserForm")[0].reset(); // 重置表单
-                    $("#addUserForm").append('<input type="hidden" name="id" value="' + user.id + '">');
+                    $("#editUserForm input[name='id']").val(user.id);
+                    $("#editUserForm input[name='username']").val(user.username);
+                    $("#editUserForm input[name='password']").val('');
+                    $("#editUserForm input[name='email']").val(user.email);
+                    $("#editUserForm input[name='phone']").val(user.phone);
+                    $("#editUserForm select[name='gender']").val(user.gender || '0');
+                    $("#editUserForm input[name='address']").val(user.address);
+                    $("#editUserForm select[name='userLevel']").val(user.userLevel || '普通用户');
+                    $("#editUserForm select[name='status']").val(user.status || '0');
 
-                    // 使用相同的数据类型和格式进行填充
-                    var username = user.username || '';
-                    var email = user.email || '';
-                    var phone = user.phone || '';
-                    var gender = user.gender !== null ? user.gender.toString() : '0';
-                    var address = user.address || '';
-                    var userLevel = user.userLevel || '普通用户';
-                    var status = user.status !== null ? user.status.toString() : '0';
+                    // 重置提示信息
+                    $(".help-block").text("").removeClass("text-success text-danger");
 
-                    $("#addUserForm input[name='username']").val(username);
-                    $("#addUserForm input[name='password']").val(''); // 密码不回显
-                    $("#addUserForm input[name='email']").val(email);
-                    $("#addUserForm input[name='phone']").val(phone);
-                    $("#addUserForm select[name='gender']").val(gender);
-                    $("#addUserForm input[name='address']").val(address);
-                    $("#addUserForm select[name='userLevel']").val(userLevel);
-                    $("#addUserForm select[name='status']").val(status);
-
-                    // 直接将原始数据存储在表单元素上，保证数据类型一致
-                    $("#addUserForm").data('originalUsername', username);
-                    $("#addUserForm").data('originalEmail', email);
-                    $("#addUserForm").data('originalPhone', phone);
-                    $("#addUserForm").data('originalGender', gender);
-                    $("#addUserForm").data('originalAddress', address);
-                    $("#addUserForm").data('originalUserLevel', userLevel);
-                    $("#addUserForm").data('originalStatus', status);
-
-                    // 打开模态框
                     layer.open({
                         type: 1,
                         title: '编辑用户',
-                        area: ['550px', '500px'],
-                        content: $("#addUserModal"),
+                        area: ['550px', '600px'],
+                        content: $("#editUserModal"),
                         btn: ['保存', '取消'],
                         yes: function(index) {
-                            // 表单验证
-                            if(!validateFormForEdit()) {
-                                return;
-                            }
-
                             // 检查是否有修改
-                            var hasChange = false;
+                            var isModified = false;
+                            var currentData = {
+                                username: $("#editUserForm input[name='username']").val(),
+                                password: $("#editUserForm input[name='password']").val(),
+                                email: $("#editUserForm input[name='email']").val(),
+                                phone: $("#editUserForm input[name='phone']").val(),
+                                gender: $("#editUserForm select[name='gender']").val(),
+                                address: $("#editUserForm input[name='address']").val(),
+                                userLevel: $("#editUserForm select[name='userLevel']").val(),
+                                status: $("#editUserForm select[name='status']").val()
+                            };
 
-                            // 逐个检查每个字段，确保数据类型和比较方式一致
-                            if($("#addUserForm input[name='username']").val() !== $("#addUserForm").data('originalUsername')) {
-                                hasChange = true;
-                                console.log("用户名发生变化");
+                            // 比较每个字段
+                            for(var key in originalData) {
+                                if(key === 'password') continue; // 密码字段特殊处理
+                                if(currentData[key] != originalData[key]) {
+                                    isModified = true;
+                                    break;
+                                }
                             }
 
-                            // 密码字段不为空则视为有修改
-                            if($("#addUserForm input[name='password']").val() !== '') {
-                                hasChange = true;
-                                console.log("密码发生变化");
+                            // 如果有密码输入，则视为修改
+                            if(currentData.password && currentData.password.trim() !== '') {
+                                isModified = true;
                             }
 
-                            if($("#addUserForm input[name='email']").val() !== $("#addUserForm").data('originalEmail')) {
-                                hasChange = true;
-                                console.log("邮箱发生变化");
-                            }
-
-                            if($("#addUserForm input[name='phone']").val() !== $("#addUserForm").data('originalPhone')) {
-                                hasChange = true;
-                                console.log("电话发生变化");
-                            }
-
-                            if($("#addUserForm select[name='gender']").val() !== $("#addUserForm").data('originalGender')) {
-                                hasChange = true;
-                                console.log("性别发生变化");
-                            }
-
-                            if($("#addUserForm input[name='address']").val() !== $("#addUserForm").data('originalAddress')) {
-                                hasChange = true;
-                                console.log("地址发生变化");
-                            }
-
-                            if($("#addUserForm select[name='userLevel']").val() !== $("#addUserForm").data('originalUserLevel')) {
-                                hasChange = true;
-                                console.log("用户级别发生变化");
-                            }
-
-                            if($("#addUserForm select[name='status']").val() !== $("#addUserForm").data('originalStatus')) {
-                                hasChange = true;
-                                console.log("状态发生变化");
-                            }
-
-                            // 输出调试信息
-                            console.log("是否有变化: " + hasChange);
-
-                            if (!hasChange) {
-                                layer.msg("没有修改任何信息", {icon: 0, time: 2000});
+                            if(!isModified) {
+                                layer.msg("没有信息修改", {icon: 0, time: 2000});
                                 return;
                             }
 
-                            // 检查用户名唯一性
-                            var newUsername = $("#addUserForm input[name='username']").val();
-                            if(newUsername !== $("#addUserForm").data('originalUsername')) {
-                                $.ajax({
-                                    url: "user/checkUsername",
-                                    type: "get",
-                                    data: {username: newUsername, excludeId: user.id},
-                                    dataType: "json",
-                                    success: function(checkResponse) {
-                                        if(checkResponse.exists) {
-                                            layer.msg("用户名已存在，请使用其他用户名", {icon: 2, time: 2000});
-                                        } else {
-                                            submitEditForm(index);
-                                        }
-                                    }
-                                });
-                            } else {
-                                submitEditForm(index);
+                            // 执行所有校验
+                            var isValid = true;
+                            isValid = checkEditUsername($("#editUserForm input[name='username']")) && isValid;
+                            isValid = checkEditPassword($("#editUserForm input[name='password']")) && isValid;
+                            isValid = checkEditEmail($("#editUserForm input[name='email']")) && isValid;
+                            isValid = checkEditPhone($("#editUserForm input[name='phone']")) && isValid;
+
+                            if (!isValid) {
+                                layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
+                                return;
                             }
+
+                            submitEditForm(index);
                         }
                     });
                 } else {
@@ -809,7 +1002,6 @@
 
         return true;
     }
-    // 修改提交添加表单的函数，添加验证
     function submitAddForm(index) {
         // 表单验证
         if(!validateForm()) {
@@ -837,18 +1029,18 @@
     function submitEditForm(index) {
         var formData = {};
 
-        // 手动获取表单数据
-        formData.id = $("#addUserForm input[name='id']").val();
-        formData.username = $("#addUserForm input[name='username']").val();
-        formData.email = $("#addUserForm input[name='email']").val();
-        formData.phone = $("#addUserForm input[name='phone']").val();
-        formData.gender = $("#addUserForm select[name='gender']").val();
-        formData.address = $("#addUserForm input[name='address']").val();
-        formData.userLevel = $("#addUserForm select[name='userLevel']").val();
-        formData.status = $("#addUserForm select[name='status']").val();
+        // 从editUserForm获取数据
+        formData.id = $("#editUserForm input[name='id']").val();
+        formData.username = $("#editUserForm input[name='username']").val();
+        formData.email = $("#editUserForm input[name='email']").val();
+        formData.phone = $("#editUserForm input[name='phone']").val();
+        formData.gender = $("#editUserForm select[name='gender']").val();
+        formData.address = $("#editUserForm input[name='address']").val();
+        formData.userLevel = $("#editUserForm select[name='userLevel']").val();
+        formData.status = $("#editUserForm select[name='status']").val();
 
         // 只有当密码不为空时，才添加到表单数据中
-        var password = $("#addUserForm input[name='password']").val();
+        var password = $("#editUserForm input[name='password']").val();
         if(password !== '') {
             formData.password = password;
         }

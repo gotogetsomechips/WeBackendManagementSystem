@@ -118,24 +118,27 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">文章标题：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="title" required>
+                <input type="text" class="form-control" name="title" required onblur="checkTitle(this)">
+                <span id="titleTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">所属分类：</label>
             <div class="col-sm-9">
-                <select class="form-control" name="categoryId" id="categorySelect" required>
+                <select class="form-control" name="categoryId" id="categorySelect" required onchange="checkCategory(this)">
                     <option value="">--请选择分类--</option>
                     <c:forEach items="${categories}" var="category">
                         <option value="${category.id}">${category.name}</option>
                     </c:forEach>
                 </select>
+                <span id="categoryTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" value="0" required>
+                <input type="number" class="form-control" name="sortOrder" value="0" required onblur="checkSortOrder(this)">
+                <span id="sortOrderTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -157,7 +160,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">内容：</label>
             <div class="col-sm-9">
-                <textarea class="form-control" name="content" rows="6"></textarea>
+                <textarea class="form-control" name="content" rows="6" required onblur="checkContent(this)"></textarea>
+                <span id="contentTip" class="help-block"></span>
             </div>
         </div>
     </form>
@@ -224,7 +228,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">文章标题：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="title" required>
+                <input type="text" class="form-control" name="title" required onblur="checkEditTitle(this)">
+                <span id="editTitleTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -241,7 +246,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" required>
+                <input type="number" class="form-control" name="sortOrder" required onblur="checkEditSortOrder(this)">
+                <span id="editSortOrderTip" class="help-block"></span>
             </div>
         </div>
         <div class="form-group">
@@ -263,7 +269,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">内容：</label>
             <div class="col-sm-9">
-                <textarea class="form-control" name="content" rows="6"></textarea>
+                <textarea class="form-control" name="content" rows="6" required></textarea>
             </div>
         </div>
     </form>
@@ -632,41 +638,26 @@
 
     // 添加文章表单验证
     function showAddArticleModal() {
-        // 重置表单
+        // 重置表单和提示信息
         $("#addArticleForm")[0].reset();
+        $(".help-block").text("").removeClass("text-success text-danger");
 
         layer.open({
             type: 1,
             title: '添加文章',
-            area: ['600px', '600px'],
-            content: $("#addArticleModal"), // 这里修改为正确的模态框ID
+            area: ['600px', '650px'], // 增加高度以适应校验提示
+            content: $("#addArticleModal"),
             btn: ['提交', '取消'],
             yes: function(index) {
-                // 验证必填项
-                var title = $("#addArticleForm input[name='title']").val();
-                var categoryId = $("#categorySelect").val();
-                var sortOrder = $("#addArticleForm input[name='sortOrder']").val();
-                var status = $("#addArticleForm select[name='status']").val();
-                var content = $("#addArticleForm textarea[name='content']").val();
+                // 执行所有校验
+                var isValid = true;
+                isValid = checkTitle($("#addArticleForm input[name='title']")) && isValid;
+                isValid = checkCategory($("#categorySelect")) && isValid;
+                isValid = checkSortOrder($("#addArticleForm input[name='sortOrder']")) && isValid;
+                isValid = checkContent($("#addArticleForm textarea[name='content']")) && isValid;
 
-                if(!title) {
-                    layer.msg('请填写文章标题', {icon: 2, time: 2000});
-                    return;
-                }
-                if(!categoryId) {
-                    layer.msg('请选择所属分类', {icon: 2, time: 2000});
-                    return;
-                }
-                if(!sortOrder) {
-                    layer.msg('请填写编号', {icon: 2, time: 2000});
-                    return;
-                }
-                if(!status) {
-                    layer.msg('请选择状态', {icon: 2, time: 2000});
-                    return;
-                }
-                if(!content) {
-                    layer.msg('请填写文章内容', {icon: 2, time: 2000});
+                if (!isValid) {
+                    layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
                     return;
                 }
 
@@ -728,7 +719,7 @@
                     layer.open({
                         type: 1,
                         title: '编辑文章',
-                        area: ['600px', '600px'],
+                        area: ['600px', '650px'],
                         content: $("#editArticleModal"),
                         btn: ['提交', '取消'],
                         yes: function(index) {
@@ -756,30 +747,36 @@
                                 return;
                             }
 
-                            // 编号唯一性校验
-                            var sortOrder = $("#editArticleForm input[name='sortOrder']").val();
-                            var originalSortOrder = article.sortOrder;
+                            // 执行所有校验
+                            var isValid = true;
+                            isValid = checkEditTitle($("#editArticleForm input[name='title']")) && isValid;
+                            isValid = checkEditSortOrder($("#editArticleForm input[name='sortOrder']")) && isValid;
 
-                            if(sortOrder != originalSortOrder) {
-                                // 如果编号已修改，需要检查唯一性
-                                $.ajax({
-                                    url: "checkArticleSortOrderExists",
-                                    type: "get",
-                                    data: {sortOrder: sortOrder},
-                                    dataType: "json",
-                                    async: false,
-                                    success: function(response) {
-                                        if(response.exists) {
-                                            layer.msg("该编号已存在，请使用其他编号", {icon: 2, time: 2000});
-                                            return;
-                                        } else {
-                                            submitEditForm(index);
-                                        }
-                                    }
-                                });
-                            } else {
-                                submitEditForm(index);
+                            if (!isValid) {
+                                layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
+                                return;
                             }
+
+                            // 获取分类名称
+                            var categoryName = $("#editCategorySelect option:selected").text();
+
+                            var formData = $("#editArticleForm").serialize() + "&categoryName=" + encodeURIComponent(categoryName);
+
+                            $.ajax({
+                                url: "updateArticle",
+                                type: "post",
+                                data: formData,
+                                dataType: "json",
+                                success: function(response) {
+                                    if(response.success) {
+                                        layer.msg(response.message, {icon: 1, time: 1000});
+                                        layer.close(index);
+                                        loadArticleList();
+                                    } else {
+                                        layer.msg(response.message, {icon: 2, time: 2000});
+                                    }
+                                }
+                            });
                         }
                     });
                 } else {
@@ -788,7 +785,149 @@
             }
         });
     }
+    // 添加文章表单验证函数
+    function checkTitle(input) {
+        var title = $(input).val();
+        var tip = $("#titleTip");
 
+        if (!title) {
+            showTip(tip, "文章标题不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "article/checkTitleExists",
+            type: "get",
+            data: {title: title},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "标题可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkCategory(input) {
+        var categoryId = $(input).val();
+        var tip = $("#categoryTip");
+
+        if (!categoryId) {
+            showTip(tip, "请选择分类", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    function checkSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#sortOrderTip");
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "article/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkContent(input) {
+        var content = $(input).val();
+        var tip = $("#contentTip");
+
+        if (!content) {
+            showTip(tip, "内容不能为空", "error");
+            return false;
+        }
+
+        showTip(tip, "", "success");
+        return true;
+    }
+
+    // 编辑表单的校验函数
+    function checkEditTitle(input) {
+        var title = $(input).val();
+        var tip = $("#editTitleTip");
+        var id = $("#editArticleForm input[name='id']").val();
+
+        if (!title) {
+            showTip(tip, "文章标题不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "article/checkTitleExists",
+            type: "get",
+            data: {title: title, id: id},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "标题可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function checkEditSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#editSortOrderTip");
+        var id = $("#editArticleForm input[name='id']").val();
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "article/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder, id: id},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    function showTip(element, message, type) {
+        element.text(message);
+        if (type === "success") {
+            element.css({
+                "color": "#28a745",  // 绿色
+                "font-weight": "bold"
+            });
+        } else if (type === "error") {
+            element.css({
+                "color": "#dc3545",  // 红色
+                "font-weight": "bold"
+            });
+        } else {
+            element.css({
+                "color": "",  // 恢复默认颜色
+                "font-weight": ""
+            });
+        }
+    }
     // 提交编辑表单
     function submitEditForm(index) {
         // 获取分类名称

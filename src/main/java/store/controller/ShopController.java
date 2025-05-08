@@ -85,9 +85,6 @@ public class ShopController {
     /**
      * 添加商铺
      */
-    /**
-     * 添加商铺
-     */
     @RequestMapping(value = "/addShop", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> addShop(Shop shop) {
@@ -136,19 +133,7 @@ public class ShopController {
 
         return result;
     }
-    /**
-     * 检查商铺编号是否存在
-     */
-    @RequestMapping("/shop/checkSortOrderExists")
-    @ResponseBody
-    public Map<String, Object> checkSortOrderExists(Integer sortOrder) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("exists", shopService.checkSortOrderExists(sortOrder));
-        return result;
-    }
-    /**
-     * 更新商铺
-     */
+
     /**
      * 更新商铺
      */
@@ -163,13 +148,6 @@ public class ShopController {
             if (oldShop == null) {
                 result.put("success", false);
                 result.put("message", "商铺不存在");
-                return result;
-            }
-
-            // 检查店铺名称是否已存在（排除自己）
-            if (!oldShop.getName().equals(shop.getName()) && shopService.checkShopNameExists(shop.getName())) {
-                result.put("success", false);
-                result.put("message", "店铺名称已存在");
                 return result;
             }
 
@@ -256,12 +234,50 @@ public class ShopController {
      */
     @RequestMapping("/checkShopName")
     @ResponseBody
-    public Map<String, Object> checkShopName(String name) {
+    public Map<String, Object> checkShopName(
+            @RequestParam String name,
+            @RequestParam(required = false) Integer id) {
         Map<String, Object> result = new HashMap<>();
-        result.put("exists", shopService.checkShopNameExists(name));
+        boolean exists;
+
+        if (id != null) {
+            // 编辑时检查，排除当前记录
+            Shop shop = shopService.findById(id);
+            exists = shopService.checkShopNameExists(name) &&
+                    !shop.getName().equals(name);
+        } else {
+            // 添加时检查
+            exists = shopService.checkShopNameExists(name);
+        }
+
+        result.put("exists", exists);
         return result;
     }
 
+    /**
+     * 检查商铺编号是否存在
+     */
+    @RequestMapping("/shop/checkSortOrderExists")
+    @ResponseBody
+    public Map<String, Object> checkSortOrderExists(
+            @RequestParam Integer sortOrder,
+            @RequestParam(required = false) Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        boolean exists;
+
+        if (id != null) {
+            // 编辑时检查，排除当前记录
+            Shop shop = shopService.findById(id);
+            exists = shopService.checkSortOrderExists(sortOrder) &&
+                    !shop.getSortOrder().equals(sortOrder);
+        } else {
+            // 添加时检查
+            exists = shopService.checkSortOrderExists(sortOrder);
+        }
+
+        result.put("exists", exists);
+        return result;
+    }
     /**
      * 获取所有商铺分类
      */

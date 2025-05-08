@@ -116,7 +116,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">商铺名称：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="name" required onblur="checkShopName(this)">
+                <span class="help-block" id="nameTip"></span>
             </div>
         </div>
         <div class="form-group">
@@ -143,7 +144,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" value="0" required>
+                <input type="number" class="form-control" name="sortOrder" value="0" required onblur="checkSortOrder(this)">
+                <span class="help-block" id="sortOrderTip"></span>
             </div>
         </div>
         <div class="form-group">
@@ -214,7 +216,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">商铺名称：</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="name" required onblur="checkEditShopName(this)">
+                <span class="help-block" id="editNameTip"></span>
             </div>
         </div>
         <div class="form-group">
@@ -241,7 +244,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">编号：</label>
             <div class="col-sm-9">
-                <input type="number" class="form-control" name="sortOrder" required>
+                <input type="number" class="form-control" name="sortOrder" required onblur="checkEditSortOrder(this)">
+                <span class="help-block" id="editSortOrderTip"></span>
             </div>
         </div>
         <div class="form-group">
@@ -294,7 +298,126 @@
             $("input[name='shopIds']").prop("checked", this.checked);
         });
     });
+    // 检查店铺名称
+    function checkShopName(input) {
+        var name = $(input).val();
+        var tip = $("#nameTip");
 
+        if (!name) {
+            showTip(tip, "店铺名称不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "checkShopName",
+            type: "get",
+            data: {name: name},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "店铺名称可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    // 检查编辑时的店铺名称
+    function checkEditShopName(input) {
+        var name = $(input).val();
+        var tip = $("#editNameTip");
+        var id = $("#editShopForm input[name='id']").val();
+
+        if (!name) {
+            showTip(tip, "店铺名称不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "checkShopName",
+            type: "get",
+            data: {name: name, id: id},
+            dataType: "json",
+            success: function(response) {{
+                    showTip(tip, "店铺名称可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    // 检查编号
+    function checkSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#sortOrderTip");
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "shop/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    // 检查编辑时的编号
+    function checkEditSortOrder(input) {
+        var sortOrder = $(input).val();
+        var tip = $("#editSortOrderTip");
+        var id = $("#editShopForm input[name='id']").val();
+
+        if (!sortOrder) {
+            showTip(tip, "编号不能为空", "error");
+            return false;
+        }
+
+        $.ajax({
+            url: "shop/checkSortOrderExists",
+            type: "get",
+            data: {sortOrder: sortOrder, id: id},
+            dataType: "json",
+            success: function(response) {
+                if (response.exists) {
+                    showTip(tip, "该编号已存在", "error");
+                } else {
+                    showTip(tip, "编号可用", "success");
+                }
+            }
+        });
+        return true;
+    }
+
+    // 显示提示信息
+    function showTip(element, message, type) {
+        element.text(message);
+        if (type === "success") {
+            element.css({
+                "color": "#28a745",
+                "font-weight": "bold"
+            });
+        } else if (type === "error") {
+            element.css({
+                "color": "#dc3545",
+                "font-weight": "bold"
+            });
+        } else {
+            element.css({
+                "color": "",
+                "font-weight": ""
+            });
+        }
+    }
     // 加载商铺列表
     function loadShopList() {
         var params = $("#searchForm").serialize();
@@ -624,9 +747,11 @@
     }
 
     // 显示添加商铺模态框
+    // 显示添加商铺模态框
     function showAddShopModal() {
-        // 重置表单
+        // 重置表单和提示信息
         $("#addShopForm")[0].reset();
+        $(".help-block").text("").removeClass("text-success text-danger");
 
         layer.open({
             type: 1,
@@ -635,6 +760,16 @@
             content: $("#addShopModal"),
             btn: ['提交', '取消'],
             yes: function(index) {
+                // 执行所有校验
+                var isValid = true;
+                isValid = checkShopName($("#addShopForm input[name='name']")) && isValid;
+                isValid = checkSortOrder($("#addShopForm input[name='sortOrder']")) && isValid;
+
+                if (!isValid) {
+                    layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
+                    return;
+                }
+
                 // 获取分类名称
                 var categoryId = $("#categorySelect").val();
                 var categoryName = $("#categorySelect option:selected").text();
@@ -757,7 +892,18 @@
     }
 
     // 提交编辑表单
+    // 提交编辑表单
     function submitEditForm(index) {
+        // 执行所有校验
+        var isValid = true;
+        isValid = checkEditShopName($("#editShopForm input[name='name']")) && isValid;
+        isValid = checkEditSortOrder($("#editShopForm input[name='sortOrder']")) && isValid;
+
+        if (!isValid) {
+            layer.msg("请修正表单中的错误", {icon: 2, time: 2000});
+            return;
+        }
+
         // 获取分类名称
         var categoryId = $("#editCategorySelect").val();
         var categoryName = $("#editCategorySelect option:selected").text();
